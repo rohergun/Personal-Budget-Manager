@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: BudgetManager
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/mydatabase
+    username: user
+    password: secret
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+jwt:
+  secret: JXxKmFdpauSV1waI+6H3s/7RPLZ7Y0ZxGQ7yUZQLBTOnN2ponZxRkEkzfAJ7jpEInWh36txAWkG+1gT/DQiJPg==
+  expiration: 86400000
