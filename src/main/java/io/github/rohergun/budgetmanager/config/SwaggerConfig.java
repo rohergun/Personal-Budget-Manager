@@ -1,4 +1,4 @@
-package io.github.rohergun.budgetmanager.auth.config;
+package io.github.rohergun.budgetmanager.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
