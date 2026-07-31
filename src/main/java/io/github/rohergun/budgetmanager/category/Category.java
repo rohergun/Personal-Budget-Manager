@@ -18,6 +18,6 @@ public class Category extends BaseEntity {
     @Column(name = "category_name", nullable = false)
     private String name;
 
-    @Column(nullable = false, length = 500)
+    @Column(length = 500)
     private String description;
 }
