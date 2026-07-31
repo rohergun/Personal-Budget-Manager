@@ -1,5 +1,6 @@
 package io.github.rohergun.budgetmanager.user;
 
+import io.github.rohergun.budgetmanager.model.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -12,11 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter @Setter
 @Builder
-public class AppUser {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+public class AppUser extends BaseEntity {
 
     @Column(nullable = false, unique = true)
     @NotBlank
