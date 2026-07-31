@@ -18,6 +18,6 @@ import java.math.BigDecimal;
 @Getter @Setter
 public class Budget extends BaseEntity {
 
-    @Column(name = "monthly_limit")
+    @Column(name = "monthly_limit", nullable = false)
     private BigDecimal monthlyLimit;
 }
