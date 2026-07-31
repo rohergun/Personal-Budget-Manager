@@ -18,7 +18,7 @@ public class Transaction extends BaseEntity {
     @Column(nullable = false)
     private BigDecimal amount;
 
-    @Column(name = "trasaction_type", nullable = false)
+    @Column(name = "transaction_type", nullable = false)
     @Enumerated(EnumType.STRING)
     private TransactionType type;
 }
