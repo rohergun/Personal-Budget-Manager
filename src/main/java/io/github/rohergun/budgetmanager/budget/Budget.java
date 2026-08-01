@@ -14,7 +14,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "budgets")
+@Table(name = "budgets", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "category_id"}))
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter @Setter
