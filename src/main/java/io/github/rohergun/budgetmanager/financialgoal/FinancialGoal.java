@@ -1,9 +1,8 @@
 package io.github.rohergun.budgetmanager.financialgoal;
 
 import io.github.rohergun.budgetmanager.model.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import io.github.rohergun.budgetmanager.user.AppUser;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,4 +30,8 @@ public class FinancialGoal extends BaseEntity {
 
     @Column(nullable = false)
     private LocalDateTime deadline;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private AppUser user;
 }
