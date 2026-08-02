@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 public enum DomainErrorMessage {
 
     // User domain
-    USER_NOT_F0UND(HttpStatus.NOT_FOUND, "User not found"),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User not found"),
     EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "Email is already exists"),
     INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "Invalid email or password"),
 
