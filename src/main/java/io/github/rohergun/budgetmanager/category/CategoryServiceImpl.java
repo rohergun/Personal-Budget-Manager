@@ -40,7 +40,7 @@ public class CategoryServiceImpl implements CategoryService{
     @Override
     @Transactional
     public CategoryResponse addCategory(UUID userId, CreateCategoryRequest request) {
-        if (!categoryRepository.existsByUserIdAndName(userId, request.name())) {
+        if (categoryRepository.existsByUserIdAndName(userId, request.name())) {
             throw new BudgetManagerException(DomainErrorMessage.CATEGORY_ALREADY_EXISTS);
         }
 
