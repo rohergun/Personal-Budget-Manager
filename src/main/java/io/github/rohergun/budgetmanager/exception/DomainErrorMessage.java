@@ -13,6 +13,7 @@ public enum DomainErrorMessage {
 
     // Category domain
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "Category not found"),
+    CATEGORY_ALREADY_EXISTS(HttpStatus.CONFLICT, "Category with this name is already exists"),
 
     // Budget domain
     BUDGET_NOT_FOUND(HttpStatus.NOT_FOUND, "Budget not found"),

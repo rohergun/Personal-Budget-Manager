@@ -3,15 +3,13 @@ package io.github.rohergun.budgetmanager.category;
 import io.github.rohergun.budgetmanager.model.BaseEntity;
 import io.github.rohergun.budgetmanager.user.AppUser;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(name = "categories", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "category_name"}))
 @AllArgsConstructor @NoArgsConstructor
 @Setter @Getter
+@Builder
 public class Category extends BaseEntity {
 
     @Column(name = "category_name", nullable = false)
