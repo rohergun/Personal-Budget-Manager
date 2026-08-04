@@ -3,10 +3,7 @@ package io.github.rohergun.budgetmanager.financialgoal;
 import io.github.rohergun.budgetmanager.model.BaseEntity;
 import io.github.rohergun.budgetmanager.user.AppUser;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -15,6 +12,7 @@ import java.time.LocalDateTime;
 @Table(name = "financial_goals")
 @AllArgsConstructor @NoArgsConstructor
 @Getter @Setter
+@Builder
 public class FinancialGoal extends BaseEntity {
 
     @Column(nullable = false)
