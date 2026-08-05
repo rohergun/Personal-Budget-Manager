@@ -2,6 +2,7 @@ package io.github.rohergun.budgetmanager.transaction.dto;
 
 import io.github.rohergun.budgetmanager.transaction.TransactionType;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Positive;
 
 import java.math.BigDecimal;
@@ -18,6 +19,6 @@ public record CreateTransactionRequest(
         @NotNull
         UUID categoryId,
 
-        @NotNull
+        @NotNull @PastOrPresent
         LocalDateTime transactionDate
 ) { }
