@@ -49,9 +49,9 @@ Each feature package generally contains:
 - `dto/` — request/response records
 - `summary/` is the one package that doesn't follow this shape exactly — it has no entity or repository of its own, since it's a read-only aggregation layer over `transaction` and `budget` data. See [Architecture Decisions](#architecture-decisions) below.
 
-## UML Diagram
+## Class Diagram
 
-_UML class diagram to be added here._
+[Class Diagram](class-diagram.mmd)
 
 ## Architecture Decisions
 

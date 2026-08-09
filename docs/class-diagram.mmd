@@ -1,0 +1,58 @@
+classDiagram
+
+    class BaseEntity {
+        UUID id
+        LocalDateTime createdAt
+        LocalDateTime updatedAt
+    }
+
+    class AppUser {
+        String email
+        String name
+        String surname
+        String password
+    }
+
+    class Budget {
+        BigDecimal monthlyLimit
+    }
+
+    class Transaction {
+        BigDecimal amount
+        TransactionType type
+        LocalDateTime transactionDate
+    }
+
+    class FinancialGoal {
+        String name
+        String description
+        BigDecimal targetAmount
+        BigDecimal currentAmount
+        LocalDateTime deadline
+    }
+
+    class Category {
+        String name
+        String description
+    }
+
+    class TransactionType{
+        enum income
+        enum expense
+    }
+
+    BaseEntity <|-- AppUser
+    BaseEntity <|-- Budget
+    BaseEntity <|-- Transaction
+    BaseEntity <|-- FinancialGoal
+    BaseEntity <|-- Category
+
+    AppUser "1" -- "0..*" Budget
+    AppUser "1" -- "0..*" Transaction
+    AppUser "1" -- "0..*" FinancialGoal
+    AppUser "1" -- "0..*" Category
+
+    Category "1" -- "0..*" Transaction
+    Category "1" -- "0..*" Budget
+
+    Transaction --> TransactionType
