@@ -82,6 +82,9 @@ Tests run against an in-memory H2 database, so Docker is not required to run the
 
 This README covers what the project does and how to run it. Deeper technical documentation lives in `docs/`:
 
+- **[Architecture](docs/ARCHITECTURE.md)** — project structure, layers, class diagram and architecture decisions section. 
+
+
 ## Testing
 
 - **Unit tests** (JUnit 5 + Mockito) cover every service's business logic: ownership checks, uniqueness rules, and domain exception paths.
