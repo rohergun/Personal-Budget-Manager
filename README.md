@@ -84,6 +84,7 @@ This README covers what the project does and how to run it. Deeper technical doc
 
 - **[Architecture](docs/ARCHITECTURE.md)** — project structure, layers, class diagram and architecture decisions section. 
 
+- **[Design Decisions](docs/DECISIONS.md)** - 
 
 ## Testing
 
@@ -93,10 +94,10 @@ This README covers what the project does and how to run it. Deeper technical doc
 
 ## Roadmap
 
-- Read-through caching on low-write, high-read endpoints (e.g. categories)
-- More summary options for users and Goal contribution
-- CSV imports
-- Export report generation
-- Recurring Transfers (using @Scheduled, auto creating Transactions)
-- Rate limiting on auth endpoints 
-- Deployment
+- [ ] Read-through caching on low-write, high-read endpoints 
+- [ ] More summary options for users and Goal contribution
+- [ ] CSV imports
+- [ ] Export report generation
+- [ ] Recurring Transfers (using @Scheduled, auto creating Transactions)
+- [ ] Rate limiting on auth endpoints 
+- [ ] Deployment
