@@ -3,6 +3,8 @@ package io.github.rohergun.budgetmanager.auth;
 import io.github.rohergun.budgetmanager.auth.dto.AuthResponse;
 import io.github.rohergun.budgetmanager.auth.dto.LoginRequest;
 import io.github.rohergun.budgetmanager.auth.dto.RegisterRequest;
+import io.github.rohergun.budgetmanager.exception.BudgetManagerException;
+import io.github.rohergun.budgetmanager.exception.DomainErrorMessage;
 import io.github.rohergun.budgetmanager.security.CustomUserDetails;
 import io.github.rohergun.budgetmanager.security.JwtService;
 import io.github.rohergun.budgetmanager.user.AppUser;
@@ -26,7 +28,7 @@ public class AuthServiceImpl implements AuthService{
     @Override
     public AuthResponse register(RegisterRequest request){
         if (userRepository.existsByEmail(request.email())) {
-            throw new IllegalArgumentException("Email already in use");
+            throw new BudgetManagerException(DomainErrorMessage.EMAIL_ALREADY_EXISTS);
         }
         AppUser newUser = AppUser.builder()
                 .email(request.email())
@@ -42,7 +44,7 @@ public class AuthServiceImpl implements AuthService{
     @Override
     public AuthResponse login(LoginRequest request) {
         AppUser user = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
+                .orElseThrow(() -> new BudgetManagerException(DomainErrorMessage.USER_NOT_FOUND));
 
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
             throw new BadCredentialsException("Invalid email or password");
