@@ -9,6 +9,7 @@ import io.github.rohergun.budgetmanager.transaction.TransactionRepository;
 import io.github.rohergun.budgetmanager.transaction.TransactionType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -24,6 +25,7 @@ public class SummaryServiceImpl implements SummaryService{
     private final BudgetRepository budgetRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public MonthlySummaryResponse getMonthlyTransactionsSummary(UUID userId, YearMonth month) {
         LocalDateTime start = month.atDay(1).atStartOfDay();
         LocalDateTime end = month.atEndOfMonth().atTime(23, 59, 59);
