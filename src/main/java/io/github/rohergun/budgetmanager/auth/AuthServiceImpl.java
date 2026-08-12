@@ -10,12 +10,9 @@ import io.github.rohergun.budgetmanager.security.JwtService;
 import io.github.rohergun.budgetmanager.user.AppUser;
 import io.github.rohergun.budgetmanager.user.AppUserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -47,7 +44,7 @@ public class AuthServiceImpl implements AuthService{
                 .orElseThrow(() -> new BudgetManagerException(DomainErrorMessage.USER_NOT_FOUND));
 
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
-            throw new BadCredentialsException("Invalid email or password");
+            throw new BudgetManagerException(DomainErrorMessage.INVALID_CREDENTIALS);
         }
 
         return new AuthResponse(jwtService.generateToken(new CustomUserDetails(user)));
