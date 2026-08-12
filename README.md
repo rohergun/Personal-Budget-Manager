@@ -1,6 +1,7 @@
-# BudgetManager
+[![Backend CI](https://github.com/rohergun/Personal-Budget-Manager/actions/workflows/build.yaml/badge.svg)](https://github.com/rohergun/Personal-Budget-Manager/actions/workflows/build.yaml)
 
-A personal finance management REST API built for students and young professionals to track expenses, manage budgets, and work toward financial goals.
+# Personal BudgetManager 
+A personal finance management REST API built for students or professionals to track expenses, manage budgets, and work toward financial goals.
 
 ## Table of Contents
 
@@ -21,7 +22,11 @@ It handles user authentication, expense and income tracking, category-based budg
 
 **Tech Stack:**
 
-Spring Boot 4.1.0 on Java 21, backed by PostgreSQL, with stateless JWT authentication and full test coverage across the service and controller layers.
+- Java
+- Spring boot
+- PostgreSQL
+- Docker
+- H2database for testing
 
 ## Features
 
