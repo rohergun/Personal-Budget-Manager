@@ -5,6 +5,7 @@
 - [System Design](#system-design)
 - [Key Design Decisions](#key-design-decisions)
 - [REST API Design](#rest-api-design)
+- [Frontend Dashboard](#frontend-dashboard)
 
 
 ## System Design
@@ -87,8 +88,6 @@ protected void onCreate() {
 
 ## Rest API Design
 
-<br>
-
 - **Every endpoint that needs a user is scoped to the logged-in user.** 
 
 The user's ID always comes from their token, never from something the client sends. 
@@ -129,3 +128,17 @@ with ownership checked on the server rather than baked into the URL.
 
 An explicit `?month=2026-08` overrides it.
 
+## Frontend Dashboard
+
+Frontend minimal and read-only purposes. 
+
+Showcasing login, register flow and read-only view on user's own data.
+
+BudgetManager project is backend focused project, the point of dashboard is showing visual changes that users done with backend.
+
+Static files, served by the same Spring Boot app — not a separate frontend deployment. The compiled frontend lives in `src/main/resources/static/` and ships inside the same jar as the API.
+
+One deployable unit, one URL, and no CORS configuration needed at all, since the frontend and API always share the same origin. 
+
+Jwt stored in localstorage, this is the simplest option over using cookies which would need session-style backend changes and reintroduce CSRF handling.
+Tradeoff is that by any JavaScript running on the page. For Demo purposes to show user's own data without any 3rd party involvement its acceptable.
