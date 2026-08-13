@@ -20,13 +20,24 @@ A personal finance management REST API built for students or professionals to tr
 BudgetManger is a backend service for personal finance app.
 It handles user authentication, expense and income tracking, category-based budgeting, and financial goal management, with monthly spending summaries tying transactions and budgets together.
 
-**Tech Stack:**
+### Tech Stack & Tools
 
-- Java
-- Spring boot
+- Java 21
+- Spring Boot
+- Spring Security (JWT authentication)
+- Spring Data JPA / Hibernate
 - PostgreSQL
-- Docker
-- H2database for testing
+- H2 Database (in-memory, for tests)
+- Docker & Docker Compose
+- Maven
+- Jakarta Validation
+- Lombok
+- MapStruct (entity ↔ DTO mapping)
+- JJWT (JWT generation/validation)
+- JUnit 5 & Mockito (unit and controller tests)
+- springdoc-openapi (Swagger UI)
+- Javascript, Bootstrap & HTML 
+
 
 ## Features
 
@@ -39,6 +50,7 @@ It handles user authentication, expense and income tracking, category-based budg
 - **Monthly summaries** — aggregated income, expenses, and per-category spending vs. budget for a given month
 - **Consistent error handling** — a global exception handler returning structured, predictable error responses
 - **Ownership-scoped access** — every resource lookup is scoped to the authenticated user; no user can read or modify another user's data
+- **Static web dashboard** — login/register/dashboard UI showing the API's data live, without needing Swagger to see it in action
 
 ## Getting Started
 
@@ -69,15 +81,22 @@ Copy the example configuration and fill in your own values (JWT secret, DB crede
 ```bash
    ./mvnw spring-boot:run
 ```
-The API will be available at `http://localhost:8080`.
 
-5. **Explore the API**
+5. **Optional Try Dashboard**
+
+A minimal login/register/dashboard UI is served at:
+```
+   http://localhost:8080/login.html
+```
+Register an account, log in, and the dashboard will show your data pulled live from the API.
+
+6. **Explore the API**
    Swagger UI is available at:
 ```
    http://localhost:8080/swagger-ui/index.html
 ```
 
-6. **Run the tests**
+7. **Run the tests**
 ```bash
    ./mvnw clean test
 ```
