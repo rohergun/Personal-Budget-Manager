@@ -8,34 +8,41 @@ For reasoning specific to data modeling and schema tradeoffs (entity relationshi
 ## Table of Contents
 
 - [Project Structure](#project-structure)
-- [Layers](#layers)
-- [UML Diagram](#uml-diagram)
-- [REST API Reference](#rest-api-reference)
+- [Frontend Dashboard](#frontend-dashboard)
 - [Architecture Decisions](#architecture-decisions)
 
 
 ## Project Structure
 
+### Class Diagram
+
+See the UML diagram: [Class Diagram](class-diagram.mmd)
+
+### Project Layers
+
 The codebase follows a **package-by-feature** layout rather than package-by-layer — each business domain owns its entity, repository, service, controller, DTOs, and mapper in one place, instead of scattering related code across global `controllers/`, `services/`, `repositories/` packages.
 
 ```
 src/main/java/io/github/rohergun/budgetmanager/
-├── auth/                  # Registration and login
+├── auth/                  # Registration and login, authentication(Service, Controller)
 │   └── dto/
 ├── security/              # JWT filter, JwtService, CustomUserDetails(Service), SecurityConfig
+│
+│── model/                 # BaseEntity(Parent class for other Entities, supplies id and timestamp for objects)
+│ 
 ├── user/                  # AppUser entity, profile management
 │   └── dto/
-├── category/               # User-owned expense/income categories
+├── category/              # User-owned expense/income categories
 │   └── dto/
-├── budget/                 # Monthly limits per category
+├── budget/                # Monthly budgets/limits per category
 │   └── dto/
-├── transaction/             # Income/expense entries
+├── transaction/           # Income/expense entries
 │   └── dto/
-├── financialgoal/           # Savings goals and contributions
+├── financialgoal/         # Savings goals and contributions
 │   └── dto/
-├── summary/                 # Cross-domain reporting (monthly summaries)
+├── summary/               # Cross-domain reporting (monthly summaries, read only)
 │   └── dto/
-├── exception/               # DomainException, DomainErrorMessage, GlobalExceptionHandler
+├── exception/             # DomainException, DomainErrorMessage, GlobalExceptionHandler
 └── BudgetManagerApplication.java
 ```
 
@@ -49,9 +56,34 @@ Each feature package generally contains:
 - `dto/` — request/response records
 - `summary/` is the one package that doesn't follow this shape exactly — it has no entity or repository of its own, since it's a read-only aggregation layer over `transaction` and `budget` data. See [Architecture Decisions](#architecture-decisions) below.
 
-## Class Diagram
+## Frontend Dashboard
 
-[Class Diagram](class-diagram.mmd)
+A minimal static frontend lives alongside the backend and is served directly by Spring Boot — no separate app, no build step, no framework.
+
+```
+src/main/resources/static/
+├── login.html
+├── register.html
+├── index.html      # redirects to login.html page
+├── dashboard.html 
+├── css/
+│   └── style.css
+└── js/
+├── api.js          # shared fetch wrapper, attaches the JWT to every request
+├── auth.js         # login, register, logout, token storage, auth guard
+├── login.js
+├── register.js
+└── dashboard.js
+```
+
+Plain JavaScript (ES modules), Bootstrap via CDN. 
+
+The pages call the same REST API described below — nothing here is a special "frontend endpoint," it's the same `/api/v1/...` surface Swagger uses. 
+
+The JWT is stored in the browser's `localStorage` after login/register and attached as `Authorization: Bearer <token>` on every subsequent request.
+
+The dashboard exists to make the API's behavior visible, not to be a full application — see [Design Decisions](DECISIONS.md) for why it's scoped this way.
+
 
 ## Architecture Decisions
 
