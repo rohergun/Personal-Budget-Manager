@@ -8,6 +8,7 @@ import io.github.rohergun.budgetmanager.transaction.Transaction;
 import io.github.rohergun.budgetmanager.transaction.TransactionRepository;
 import io.github.rohergun.budgetmanager.transaction.TransactionType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,7 @@ public class SummaryServiceImpl implements SummaryService{
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "monthlySummary", key = "#userId + '-' + #month")
     public MonthlySummaryResponse getMonthlyTransactionsSummary(UUID userId, YearMonth month) {
         LocalDateTime start = month.atDay(1).atStartOfDay();
         LocalDateTime end = month.atEndOfMonth().atTime(23, 59, 59);
