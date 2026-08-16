@@ -10,11 +10,15 @@ import io.github.rohergun.budgetmanager.exception.DomainErrorMessage;
 import io.github.rohergun.budgetmanager.user.AppUser;
 import io.github.rohergun.budgetmanager.user.AppUserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.YearMonth;
 import java.util.UUID;
 
 @Service
@@ -25,6 +29,9 @@ public class BudgetServiceImpl implements BudgetService {
     private final CategoryRepository categoryRepository;
     private final AppUserRepository userRepository;
     private final BudgetMapper mapper;
+
+    @Autowired
+    private CacheManager cacheManager;
 
     @Override
     public BudgetResponse getBudgetById(UUID userId, UUID budgetId) {
@@ -67,6 +74,8 @@ public class BudgetServiceImpl implements BudgetService {
                 .build();
 
         Budget saved = budgetRepository.save(newBudget);
+
+        evictCurrentMonthSummary(userId);
         return mapper.toResponse(saved);
     }
 
@@ -86,6 +95,7 @@ public class BudgetServiceImpl implements BudgetService {
         budget.setMonthlyLimit(request.monthlyLimit());
         budget.setCategory(category);
 
+        evictCurrentMonthSummary(userId);
         return mapper.toResponse(budget);
     }
 
@@ -96,5 +106,13 @@ public class BudgetServiceImpl implements BudgetService {
             throw new BudgetManagerException(DomainErrorMessage.BUDGET_NOT_FOUND);
         }
         budgetRepository.deleteById(budgetId);
+        evictCurrentMonthSummary(userId);
+    }
+
+    private void evictCurrentMonthSummary(UUID userId) {
+        Cache cache = cacheManager.getCache("monthlySummary");
+        if (cache != null) {
+            cache.evict(userId + "-" + YearMonth.now());
+        }
     }
 }
