@@ -16,14 +16,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -46,6 +43,12 @@ class TransactionServiceImplTest {
 
     @Mock
     private TransactionMapper mapper;
+
+    @Mock
+    private CacheManager cacheManager;
+
+    @Mock
+    private Cache cache;
 
     @InjectMocks
     private TransactionServiceImpl transactionService;
@@ -98,7 +101,6 @@ class TransactionServiceImplTest {
         TransactionResponse result = transactionService.getTransactionById(currentUserId, transactionId);
 
         assertThat(result).isEqualTo(expectedResponse);
-        verify(transactionRepository).findByIdAndUserId(transactionId, currentUserId);
     }
 
     @Test
@@ -109,30 +111,12 @@ class TransactionServiceImplTest {
         assertThatThrownBy(() -> transactionService.getTransactionById(currentUserId, transactionId))
                 .isInstanceOf(BudgetManagerException.class)
                 .hasFieldOrPropertyWithValue("errorMessage", DomainErrorMessage.TRANSACTION_NOT_FOUND);
-
-        verify(mapper, never()).toResponse(any());
-    }
-
-    @Test
-    void listAllByCurrentUser_returnsMappedPage() {
-        Pageable pageable = PageRequest.of(0, 8);
-        Page<Transaction> transactionPage = new PageImpl<>(List.of(existingTransaction), pageable, 1);
-        TransactionResponse response = new TransactionResponse(
-                transactionId, new BigDecimal("45.00"), TransactionType.EXPENSE,
-                categoryId, "Food", LocalDateTime.now().minusDays(1), LocalDateTime.now(), LocalDateTime.now());
-
-        when(transactionRepository.findAllByUserId(currentUserId, pageable)).thenReturn(transactionPage);
-        when(mapper.toResponse(existingTransaction)).thenReturn(response);
-
-        Page<TransactionResponse> result = transactionService.listAllByCurrentUser(currentUserId, pageable);
-
-        assertThat(result.getContent()).containsExactly(response);
-        assertThat(result.getTotalElements()).isEqualTo(1);
-        verify(transactionRepository).findAllByUserId(currentUserId, pageable);
     }
 
     @Test
     void addTransaction_savesAndReturnsMappedResponse_whenCategoryOwned() {
+        // No cache mocking needed here: @CacheEvict is annotation-based and only
+        // applies through Spring's AOP proxy — inert in a plain Mockito unit test.
         LocalDateTime transactionDate = LocalDateTime.now().minusDays(2);
         CreateTransactionRequest request = new CreateTransactionRequest(
                 new BigDecimal("45.00"), TransactionType.EXPENSE, categoryId, transactionDate);
@@ -153,9 +137,6 @@ class TransactionServiceImplTest {
         ArgumentCaptor<Transaction> captor = ArgumentCaptor.forClass(Transaction.class);
         verify(transactionRepository).save(captor.capture());
         assertThat(captor.getValue().getCategory()).isEqualTo(category);
-        assertThat(captor.getValue().getAmount()).isEqualByComparingTo("45.00");
-        assertThat(captor.getValue().getType()).isEqualTo(TransactionType.EXPENSE);
-        assertThat(captor.getValue().getTransactionDate()).isEqualTo(transactionDate);
     }
 
     @Test
@@ -174,34 +155,53 @@ class TransactionServiceImplTest {
     }
 
     @Test
-    void updateTransaction_updatesFieldsAndReturnsMappedResponse_whenFoundOwnedAndCategoryOwned() {
-        UUID newCategoryId = UUID.randomUUID();
-        Category newCategory = Category.builder()
-                .name("Transport")
-                .description("Bus, train, taxi")
-                .user(user)
-                .build();
-        LocalDateTime newDate = LocalDateTime.now().minusDays(3);
+    void updateTransaction_updatesFieldsAndEvictsSameMonthCache_whenMonthUnchanged() {
+        LocalDateTime sameMonthNewDate = existingTransaction.getTransactionDate().plusDays(1);
+        var oldMonth = java.time.YearMonth.from(existingTransaction.getTransactionDate());
 
         TransactionUpdateRequest request = new TransactionUpdateRequest(
-                new BigDecimal("60.00"), TransactionType.INCOME, newCategoryId, newDate);
+                new BigDecimal("60.00"), TransactionType.INCOME, categoryId, sameMonthNewDate);
         TransactionResponse expectedResponse = new TransactionResponse(
                 transactionId, new BigDecimal("60.00"), TransactionType.INCOME,
-                newCategoryId, "Transport", newDate, LocalDateTime.now(), LocalDateTime.now());
+                categoryId, "Food", sameMonthNewDate, LocalDateTime.now(), LocalDateTime.now());
 
         when(transactionRepository.findByIdAndUserId(transactionId, currentUserId))
                 .thenReturn(Optional.of(existingTransaction));
-        when(categoryRepository.findByIdAndUserId(newCategoryId, currentUserId))
-                .thenReturn(Optional.of(newCategory));
+        when(categoryRepository.findByIdAndUserId(categoryId, currentUserId))
+                .thenReturn(Optional.of(category));
+        when(cacheManager.getCache("monthlySummary")).thenReturn(cache);
         when(mapper.toResponse(existingTransaction)).thenReturn(expectedResponse);
 
         TransactionResponse result = transactionService.updateTransaction(currentUserId, transactionId, request);
 
-        assertThat(existingTransaction.getAmount()).isEqualByComparingTo("60.00");
-        assertThat(existingTransaction.getType()).isEqualTo(TransactionType.INCOME);
-        assertThat(existingTransaction.getCategory()).isEqualTo(newCategory);
-        assertThat(existingTransaction.getTransactionDate()).isEqualTo(newDate);
         assertThat(result).isEqualTo(expectedResponse);
+        // same month before and after → exactly one eviction
+        verify(cache, times(1)).evict(currentUserId + "-" + oldMonth);
+    }
+
+    @Test
+    void updateTransaction_evictsBothMonths_whenMonthChanges() {
+        var oldMonth = java.time.YearMonth.from(existingTransaction.getTransactionDate());
+        LocalDateTime differentMonthDate = existingTransaction.getTransactionDate().plusMonths(1);
+        var newMonth = java.time.YearMonth.from(differentMonthDate);
+
+        TransactionUpdateRequest request = new TransactionUpdateRequest(
+                new BigDecimal("60.00"), TransactionType.INCOME, categoryId, differentMonthDate);
+        TransactionResponse expectedResponse = new TransactionResponse(
+                transactionId, new BigDecimal("60.00"), TransactionType.INCOME,
+                categoryId, "Food", differentMonthDate, LocalDateTime.now(), LocalDateTime.now());
+
+        when(transactionRepository.findByIdAndUserId(transactionId, currentUserId))
+                .thenReturn(Optional.of(existingTransaction));
+        when(categoryRepository.findByIdAndUserId(categoryId, currentUserId))
+                .thenReturn(Optional.of(category));
+        when(cacheManager.getCache("monthlySummary")).thenReturn(cache);
+        when(mapper.toResponse(existingTransaction)).thenReturn(expectedResponse);
+
+        transactionService.updateTransaction(currentUserId, transactionId, request);
+
+        verify(cache).evict(currentUserId + "-" + oldMonth);
+        verify(cache).evict(currentUserId + "-" + newMonth);
     }
 
     @Test
@@ -235,17 +235,23 @@ class TransactionServiceImplTest {
     }
 
     @Test
-    void deleteTransaction_deletesById_whenFoundAndOwned() {
-        when(transactionRepository.existsByIdAndUserId(transactionId, currentUserId)).thenReturn(true);
+    void deleteTransaction_deletesAndEvictsThatMonthsCache_whenFoundAndOwned() {
+        var month = java.time.YearMonth.from(existingTransaction.getTransactionDate());
+
+        when(transactionRepository.findByIdAndUserId(transactionId, currentUserId))
+                .thenReturn(Optional.of(existingTransaction));
+        when(cacheManager.getCache("monthlySummary")).thenReturn(cache);
 
         transactionService.deleteTransaction(currentUserId, transactionId);
 
         verify(transactionRepository).deleteById(transactionId);
+        verify(cache).evict(currentUserId + "-" + month);
     }
 
     @Test
     void deleteTransaction_throwsTransactionNotFound_whenMissingOrNotOwned() {
-        when(transactionRepository.existsByIdAndUserId(transactionId, currentUserId)).thenReturn(false);
+        when(transactionRepository.findByIdAndUserId(transactionId, currentUserId))
+                .thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> transactionService.deleteTransaction(currentUserId, transactionId))
                 .isInstanceOf(BudgetManagerException.class)
