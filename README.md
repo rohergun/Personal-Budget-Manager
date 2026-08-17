@@ -26,6 +26,7 @@ It handles user authentication, expense and income tracking, category-based budg
 - Spring Boot
 - Spring Security (JWT authentication)
 - Spring Data JPA / Hibernate
+- Spring Cache (Caffeine)
 - PostgreSQL
 - H2 Database (in-memory, for tests)
 - Docker & Docker Compose
