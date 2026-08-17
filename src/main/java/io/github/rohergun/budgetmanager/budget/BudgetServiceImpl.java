@@ -10,7 +10,6 @@ import io.github.rohergun.budgetmanager.exception.DomainErrorMessage;
 import io.github.rohergun.budgetmanager.user.AppUser;
 import io.github.rohergun.budgetmanager.user.AppUserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
@@ -30,8 +29,7 @@ public class BudgetServiceImpl implements BudgetService {
     private final AppUserRepository userRepository;
     private final BudgetMapper mapper;
 
-    @Autowired
-    private CacheManager cacheManager;
+    private final CacheManager cacheManager;
 
     @Override
     public BudgetResponse getBudgetById(UUID userId, UUID budgetId) {

@@ -10,7 +10,6 @@ import io.github.rohergun.budgetmanager.transaction.dto.TransactionUpdateRequest
 import io.github.rohergun.budgetmanager.user.AppUser;
 import io.github.rohergun.budgetmanager.user.AppUserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
@@ -30,8 +29,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final AppUserRepository userRepository;
     private final TransactionMapper mapper;
 
-    @Autowired
-    private CacheManager cacheManager;
+    private final CacheManager cacheManager;
 
     @Override
     public TransactionResponse getTransactionById(UUID userId, UUID transactionId) {
@@ -77,6 +75,9 @@ public class TransactionServiceImpl implements TransactionService {
         Transaction transaction = transactionRepository.findByIdAndUserId(transactionId, userId)
                 .orElseThrow(() -> new BudgetManagerException(DomainErrorMessage.TRANSACTION_NOT_FOUND));
 
+        YearMonth oldMonth = YearMonth.from(transaction.getTransactionDate());
+        YearMonth newMonth = YearMonth.from(request.transactionDate());
+
         Category category = categoryRepository.findByIdAndUserId(request.categoryId(), userId)
                 .orElseThrow(() -> new BudgetManagerException(DomainErrorMessage.CATEGORY_NOT_FOUND));
 
@@ -84,9 +85,6 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setType(request.type());
         transaction.setCategory(category);
         transaction.setTransactionDate(request.transactionDate());
-
-        YearMonth oldMonth = YearMonth.from(transaction.getTransactionDate());
-        YearMonth newMonth = YearMonth.from(request.transactionDate());
 
         evictSummaryCache(userId, oldMonth);
         if (!oldMonth.equals(newMonth)) {
