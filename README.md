@@ -51,7 +51,7 @@ It handles user authentication, expense and income tracking, category-based budg
 - **Consistent error handling** — a global exception handler returning structured, predictable error responses
 - **Ownership-scoped access** — every resource lookup is scoped to the authenticated user; no user can read or modify another user's data
 - **Static web dashboard** — login/register/dashboard UI showing the API's data live, without needing Swagger to see it in action
-
+- **Response caching** — Caching on the monthly summary endpoint, with automatic invalidation whenever a transaction or budget changes
 ## Getting Started
 
 ### Prerequisites
@@ -118,7 +118,7 @@ This README covers what the project does and how to run it. Deeper technical doc
 
 ## Roadmap
 
-- [ ] Read-through caching on low-write, high-read endpoints 
+- [x] Read-through caching on low-write, high-read endpoints 
 - [ ] More summary options for users and Goal contribution
 - [ ] CSV imports
 - [ ] Export report generation

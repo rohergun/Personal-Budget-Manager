@@ -10,15 +10,40 @@
 
 ## System Design
 
-- **Relational Database over NoSQL database**
+### 1. Relational Database over NoSQL 
 
 In BudgetManager data is naturally relational a user has many budgets, transactions, and goals, and each of those references a category. 
 
 Foreign keys and constraints handle that shape well, and rules like "one budget per category per user" are enforced reliably at the database level rather than only in application code.
 
-- **Stateless JWT authentication, no server-side sessions**
+### 2. Stateless JWT authentication, no server-side sessions
 
 The server doesn't store any login state. Each request carries a signed token proving who the user is.
+
+### 3. Caching
+
+* Caching added to monthly summary endpoint, backed by Caffeine.
+* Summary isn't plain row lookup, every request re-fetches user's transaction for the given month and re-computes total.
+* Caffeine chosen over Redis because app runs in single instance Redis, where Redis is more efficient for multiple app instance and,
+Caffeine simplifies caching flow no separate service to run or connect to. 
+* If the app ever ran as multiple instances, Spring's caching abstraction makes the provider swappable without touching any `@Cacheable/@CacheEvict` code.
+* A cached summary is only useful if it's never stale, so every write to `Transaction` or `Budget` evicts the specific cache entry it affects — keyed by user and month. 
+Editing a transaction's date across a month boundary evicts *both* the old and new month, since both summaries are affected. 
+A 10-minute expiry is also set as a backstop, in case an eviction path is ever missed.
+
+```mermaid
+flowchart TD
+    A[GET /summaries/monthly] --> B{Cached for this <br> user + month?}
+    B -- yes --> C[Return cached response]
+    B -- no --> D[Query transactions + budgets]
+    D --> E[Aggregate: totals, net, <br> per-category spend vs. budget]
+    E --> F[Store in cache]
+    F --> C
+ 
+    G[POST/PUT/DELETE <br> Transaction or Budget] --> H[Evict cache entry <br> for affected user + month]
+    H -.->|next read is a miss,<br/>recomputes fresh| B
+```
+
 
 <br>
 
