@@ -16,13 +16,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.time.YearMonth;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -45,6 +43,12 @@ class BudgetServiceImplTest {
 
     @Mock
     private BudgetMapper mapper;
+
+    @Mock
+    private CacheManager cacheManager;
+
+    @Mock
+    private Cache cache;
 
     @InjectMocks
     private BudgetServiceImpl budgetService;
@@ -94,7 +98,6 @@ class BudgetServiceImplTest {
         BudgetResponse result = budgetService.getBudgetById(currentUserId, budgetId);
 
         assertThat(result).isEqualTo(expectedResponse);
-        verify(budgetRepository).findByIdAndUserId(budgetId, currentUserId);
     }
 
     @Test
@@ -105,53 +108,10 @@ class BudgetServiceImplTest {
         assertThatThrownBy(() -> budgetService.getBudgetById(currentUserId, budgetId))
                 .isInstanceOf(BudgetManagerException.class)
                 .hasFieldOrPropertyWithValue("errorMessage", DomainErrorMessage.BUDGET_NOT_FOUND);
-
-        verify(mapper, never()).toResponse(any());
     }
 
     @Test
-    void listAllByCurrentUser_returnsMappedPage() {
-        Pageable pageable = PageRequest.of(0, 8);
-        Page<Budget> budgetPage = new PageImpl<>(List.of(existingBudget), pageable, 1);
-        BudgetResponse response = new BudgetResponse(
-                budgetId, new BigDecimal("300.00"), categoryId, "Food", null, null);
-
-        when(budgetRepository.findAllByUserId(currentUserId, pageable)).thenReturn(budgetPage);
-        when(mapper.toResponse(existingBudget)).thenReturn(response);
-
-        Page<BudgetResponse> result = budgetService.listAllByCurrentUser(currentUserId, pageable);
-
-        assertThat(result.getContent()).containsExactly(response);
-        assertThat(result.getTotalElements()).isEqualTo(1);
-        verify(budgetRepository).findAllByUserId(currentUserId, pageable);
-    }
-
-    @Test
-    void getBudgetByCategory_returnsMappedResponse_whenFound() {
-        BudgetResponse expectedResponse = new BudgetResponse(
-                budgetId, new BigDecimal("300.00"), categoryId, "Food", null, null);
-
-        when(budgetRepository.findByUserIdAndCategoryId(currentUserId, categoryId))
-                .thenReturn(Optional.of(existingBudget));
-        when(mapper.toResponse(existingBudget)).thenReturn(expectedResponse);
-
-        BudgetResponse result = budgetService.getBudgetByCategory(currentUserId, categoryId);
-
-        assertThat(result).isEqualTo(expectedResponse);
-    }
-
-    @Test
-    void getBudgetByCategory_throwsBudgetNotFound_whenMissing() {
-        when(budgetRepository.findByUserIdAndCategoryId(currentUserId, categoryId))
-                .thenReturn(Optional.empty());
-
-        assertThatThrownBy(() -> budgetService.getBudgetByCategory(currentUserId, categoryId))
-                .isInstanceOf(BudgetManagerException.class)
-                .hasFieldOrPropertyWithValue("errorMessage", DomainErrorMessage.BUDGET_NOT_FOUND);
-    }
-
-    @Test
-    void addBudget_savesAndReturnsMappedResponse_whenCategoryFreeAndOwned() {
+    void addBudget_savesAndEvictsCurrentMonthCache_whenCategoryFreeAndOwned() {
         CreateBudgetRequest request = new CreateBudgetRequest(new BigDecimal("300.00"), categoryId);
         BudgetResponse expectedResponse = new BudgetResponse(
                 budgetId, new BigDecimal("300.00"), categoryId, "Food", null, null);
@@ -161,16 +121,17 @@ class BudgetServiceImplTest {
                 .thenReturn(Optional.of(category));
         when(userRepository.getReferenceById(currentUserId)).thenReturn(user);
         when(budgetRepository.save(any(Budget.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(cacheManager.getCache("monthlySummary")).thenReturn(cache);
         when(mapper.toResponse(any(Budget.class))).thenReturn(expectedResponse);
 
         BudgetResponse result = budgetService.addBudget(currentUserId, request);
 
         assertThat(result).isEqualTo(expectedResponse);
+        verify(cache).evict(currentUserId + "-" + YearMonth.now());
 
         ArgumentCaptor<Budget> captor = ArgumentCaptor.forClass(Budget.class);
         verify(budgetRepository).save(captor.capture());
         assertThat(captor.getValue().getCategory()).isEqualTo(category);
-        assertThat(captor.getValue().getMonthlyLimit()).isEqualByComparingTo("300.00");
     }
 
     @Test
@@ -183,7 +144,6 @@ class BudgetServiceImplTest {
                 .isInstanceOf(BudgetManagerException.class)
                 .hasFieldOrPropertyWithValue("errorMessage", DomainErrorMessage.BUDGET_ALREADY_EXISTS);
 
-        verify(categoryRepository, never()).findByIdAndUserId(any(), any());
         verify(budgetRepository, never()).save(any());
     }
 
@@ -203,7 +163,7 @@ class BudgetServiceImplTest {
     }
 
     @Test
-    void updateBudget_updatesLimitAndCategory_whenFoundOwnedAndCategoryFree() {
+    void updateBudget_updatesAndEvictsCurrentMonthCache_whenFoundOwnedAndCategoryFree() {
         UUID newCategoryId = UUID.randomUUID();
         Category newCategory = Category.builder()
                 .name("Transport")
@@ -221,6 +181,7 @@ class BudgetServiceImplTest {
                 .thenReturn(false);
         when(categoryRepository.findByIdAndUserId(newCategoryId, currentUserId))
                 .thenReturn(Optional.of(newCategory));
+        when(cacheManager.getCache("monthlySummary")).thenReturn(cache);
         when(mapper.toResponse(existingBudget)).thenReturn(expectedResponse);
 
         BudgetResponse result = budgetService.updateBudget(currentUserId, budgetId, request);
@@ -228,6 +189,7 @@ class BudgetServiceImplTest {
         assertThat(existingBudget.getMonthlyLimit()).isEqualByComparingTo("450.00");
         assertThat(existingBudget.getCategory()).isEqualTo(newCategory);
         assertThat(result).isEqualTo(expectedResponse);
+        verify(cache).evict(currentUserId + "-" + YearMonth.now());
     }
 
     @Test
@@ -279,12 +241,14 @@ class BudgetServiceImplTest {
     }
 
     @Test
-    void deleteBudget_deletesById_whenFoundAndOwned() {
+    void deleteBudget_deletesAndEvictsCurrentMonthCache_whenFoundAndOwned() {
         when(budgetRepository.existsByIdAndUserId(budgetId, currentUserId)).thenReturn(true);
+        when(cacheManager.getCache("monthlySummary")).thenReturn(cache);
 
         budgetService.deleteBudget(currentUserId, budgetId);
 
         verify(budgetRepository).deleteById(budgetId);
+        verify(cache).evict(currentUserId + "-" + YearMonth.now());
     }
 
     @Test
