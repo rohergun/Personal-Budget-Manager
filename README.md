@@ -74,7 +74,7 @@ It handles user authentication, expense and income tracking, category-based budg
 ```
 This starts PostgreSQL and pgAdmin as defined in `docker-compose.yaml`.
 
-3. **Configure environment values**
+3. **(Optional) Configure environment values**
 
 Copy the example configuration and fill in your own values (JWT secret, DB credentials if changed from defaults).
 
@@ -83,9 +83,9 @@ Copy the example configuration and fill in your own values (JWT secret, DB crede
    ./mvnw spring-boot:run
 ```
 
-5. **Optional Try Dashboard**
+5. **(Optional) Try Dashboard**
 
-A minimal login/register/dashboard UI is served at:
+Dashboard UI displaying changes from user's account and, register -> login flow.
 ```
    http://localhost:8080/login.html
 ```
@@ -101,15 +101,17 @@ Register an account, log in, and the dashboard will show your data pulled live f
 ```bash
    ./mvnw clean test
 ```
-Tests run against an in-memory H2 database, so Docker is not required to run the test suite.
+Tests run against an in-memory H2 database so, **starting up Docker isn't required** to run the test suite.
 
 ## Documentation
 
-This README covers what the project does and how to run it. Deeper technical documentation lives in `docs/`:
+**This README covers what the project does and how to run it. Deeper technical documentation lives in `docs/`:**
 
 - **[Architecture](docs/ARCHITECTURE.md)** — project structure, layers, class diagram and architecture decisions section. 
 
 - **[Design Decisions](docs/DECISIONS.md)** — project system design, key design decisions, restapi design decisions
+
+* Quick peek for the BudgetManager's UML Diagram : [Class-Diagram](docs/class-diagram.mmd) 
 
 ## Testing
 
@@ -120,7 +122,6 @@ This README covers what the project does and how to run it. Deeper technical doc
 ## Roadmap
 
 - [x] Read-through caching on low-write, high-read endpoints 
-- [ ] More summary options for users and Goal contribution
 - [ ] CSV imports
 - [ ] Export report generation
 - [ ] Recurring Transfers (using @Scheduled, auto creating Transactions)
