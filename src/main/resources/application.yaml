@@ -13,6 +13,9 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+    properties:
+      hibernate:
+        generate_statistics: true
 
 springdoc:
   swagger-ui:
@@ -23,3 +26,7 @@ springdoc:
 jwt:
   secret: JXxKmFdpauSV1waI+6H3s/7RPLZ7Y0ZxGQ7yUZQLBTOnN2ponZxRkEkzfAJ7jpEInWh36txAWkG+1gT/DQiJPg==
   expiration: 86400000
+
+logging:
+  level:
+    org.hibernate.stat: DEBUG
