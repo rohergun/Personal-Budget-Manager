@@ -44,6 +44,38 @@ flowchart TD
     H -.->|next read is a miss,<br/>recomputes fresh| B
 ```
 
+### 4. Query Optimization
+
+Custom queries implemented for mainly to resolve **N+1** problem, on fetching `Transaction` entities together with their associated categories.
+
+For example, retrieving 100 transactions could potentially result in 1 query for transactions + 100 queries for categories.
+
+Using `JOIN FETCH` that tells JPA/Hibernate to retrieve the Transaction and its associated Category in the same database query, 
+avoiding separate queries for each category.
+
+- `TransactionRepository/findAllByUserId`
+
+```postgresql
+@Query(
+    value = "select t from Transaction t join fetch t.category where t.user.id = :userId",
+    countQuery = "select count(t) from Transaction t where t.user.id = :userId"
+)
+Page<Transaction> findAllByUserId(UUID userId, Pageable pageable);
+```
+
+- `TransactionRepository/findAllByUserIdAndTransactionDateBetween`
+
+```postgresql
+@Query("""
+    select t from Transaction t
+    join fetch t.category
+    where t.user.id = :userId
+    and t.transactionDate between :start and :end
+""")
+List<Transaction> findAllByUserIdAndTransactionDateBetween( UUID userId, LocalDateTime start, LocalDateTime end);
+```
+
+**`join fetch t.category` Loads the related Category together with each transaction. This is the main part that helps prevent the N+1 problem.**
 
 <br>
 
