@@ -17,7 +17,10 @@ public class SwaggerConfig {
                 .info(new Info()
                         .title("Student Budget Manager API")
                         .version("1.0")
-                        .description("To be updated.."))
+                        .description("Personal Budget Management API." +
+                                     "Try live the live dashboard at [/login.html](/login.html). " +
+                                     "[← Back to home](/)")
+                )
                 .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
                 .components(new Components()
                         .addSecuritySchemes("Bearer Authentication", new SecurityScheme()
