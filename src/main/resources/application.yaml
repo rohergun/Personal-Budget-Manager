@@ -6,9 +6,9 @@ spring:
     type: caffeine
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/mydatabase
-    username: user
-    password: secret
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/mydatabase}
+    username: ${DATABASE_USERNAME:user}
+    password: ${DATABASE_PASSWORD:secret}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -27,8 +27,8 @@ springdoc:
     path: /v3/api-docs
 
 jwt:
-  secret: JXxKmFdpauSV1waI+6H3s/7RPLZ7Y0ZxGQ7yUZQLBTOnN2ponZxRkEkzfAJ7jpEInWh36txAWkG+1gT/DQiJPg==
-  expiration: 86400000
+  secret: ${JWT_SECRET:JXxKmFdpauSV1waI+6H3s/7RPLZ7Y0ZxGQ7yUZQLBTOnN2ponZxRkEkzfAJ7jpEInWh36txAWkG+1gT/DQiJPg==}
+  expiration: ${JWT_EXPIRATION:86400000}
 
 logging:
   level:
