@@ -8,15 +8,68 @@ For reasoning specific to data modeling and schema tradeoffs (entity relationshi
 ## Table of Contents
 
 - [Project Structure](#project-structure)
-- [Frontend Dashboard](#frontend-dashboard)
+- [Class Diagram](#class-diagram)
 - [Architecture Decisions](#architecture-decisions)
+- [Frontend Dashboard](#frontend-dashboard)
 
 
 ## Project Structure
 
 ### Class Diagram
 
-See the UML diagram: [Class Diagram](class-diagram.mmd)
+Class diagram shows the core entities and their relationships. 
+
+Every entity extends a shared `BaseEntity` (`id`, `createdAt`, `updatedAt`), omitted below for clarity.
+
+
+```mermaid
+classDiagram
+  AppUser "1" --> "0..*" Budget : creates
+  AppUser "1" --> "0..*" Transaction : owns
+  AppUser "1" --> "0..*" FinancialGoal : sets
+  AppUser "1" --> "0..*" Category : owns
+  Category "1" --> "0..*" Budget : categorizes
+  Category "1" --> "0..*" Transaction : categorizes
+  Transaction --> TransactionType
+ 
+  class AppUser {
+    +UUID id
+    +String email
+    +String name
+    +String surname
+    +String passwordHash
+  }
+  class Category {
+    +UUID id
+    +String name
+    +String description
+  }
+  class Budget {
+    +UUID id
+    +BigDecimal monthlyLimit
+  }
+  class Transaction {
+    +UUID id
+    +BigDecimal amount
+    +TransactionType type
+    +LocalDateTime transactionDate
+  }
+  class FinancialGoal {
+    +UUID id
+    +String name
+    +String description
+    +BigDecimal currentAmount
+    +BigDecimal targetAmount
+    +LocalDateTime deadline
+  }
+  class TransactionType {
+    <<enumeration>>
+    INCOME
+    EXPENSE
+  }
+```
+
+
 
 ### Project Layers
 
@@ -55,34 +108,6 @@ Each feature package generally contains:
 - `<Entity>Mapper.java` — MapStruct entity-to-DTO mapping
 - `dto/` — request/response records
 - `summary/` is the one package that doesn't follow this shape exactly — it has no entity or repository of its own, since it's a read-only aggregation layer over `transaction` and `budget` data. See [Architecture Decisions](#architecture-decisions) below.
-
-## Frontend Dashboard
-
-A minimal static frontend lives alongside the backend and is served directly by Spring Boot — no separate app, no build step, no framework.
-
-```
-src/main/resources/static/
-├── login.html
-├── register.html
-├── index.html      # redirects to login.html page
-├── dashboard.html 
-├── css/
-│   └── style.css
-└── js/
-├── api.js          # shared fetch wrapper, attaches the JWT to every request
-├── auth.js         # login, register, logout, token storage, auth guard
-├── login.js
-├── register.js
-└── dashboard.js
-```
-
-Plain JavaScript (ES modules), Bootstrap via CDN. 
-
-The pages call the same REST API described below — nothing here is a special "frontend endpoint," it's the same `/api/v1/...` surface Swagger uses. 
-
-The JWT is stored in the browser's `localStorage` after login/register and attached as `Authorization: Bearer <token>` on every subsequent request.
-
-The dashboard exists to make the API's behavior visible, not to be a full application — see [Design Decisions](DECISIONS.md) for why it's scoped this way.
 
 
 ## Architecture Decisions
@@ -123,3 +148,32 @@ stay focused on their own CRUD, and future reports (yearly summaries, spending t
 If a resource exists but belongs to someone else, the API responds as if it doesn't exist at all, instead of confirming its existence with a 403. 
 
 Not leaking "this ID belongs to someone" is worth more than the marginal clarity a 403 would add.
+
+
+## Frontend Dashboard
+
+A minimal static frontend lives alongside the backend and is served directly by Spring Boot — no separate app, no build step, no framework.
+
+```
+src/main/resources/static/
+├── login.html
+├── register.html
+├── index.html      # redirects to login.html page
+├── dashboard.html 
+├── css/
+│   └── style.css
+└── js/
+├── api.js          # shared fetch wrapper, attaches the JWT to every request
+├── auth.js         # login, register, logout, token storage, auth guard
+├── login.js
+├── register.js
+└── dashboard.js
+```
+
+Plain JavaScript (ES modules), Bootstrap via CDN.
+
+The pages call the same REST API described below — nothing here is a special "frontend endpoint," it's the same `/api/v1/...` surface Swagger uses.
+
+The JWT is stored in the browser's `localStorage` after login/register and attached as `Authorization: Bearer <token>` on every subsequent request.
+
+The dashboard exists to make the API's behavior visible, not to be a full application — see [Design Decisions](DECISIONS.md) for why it's scoped this way.
