@@ -3,7 +3,7 @@
 This document covers how BudgetManager is structured internally: the project layout, the responsibilities of each layer, the REST API surface, and the reasoning behind the architectural choices that shape the codebase.
 
 
-For reasoning specific to data modeling and schema tradeoffs (entity relationships, cascade behavior, constraints), see [DESIGN DECISIONS](DECISIONS.md).
+For reasoning specific to data modeling and schema tradeoffs (entity relationships, cascade behavior, constraints), see in **design decisions**.
 
 ## Table of Contents
 
@@ -175,5 +175,3 @@ Plain JavaScript (ES modules), Bootstrap via CDN.
 The pages call the same REST API described below — nothing here is a special "frontend endpoint," it's the same `/api/v1/...` surface Swagger uses.
 
 The JWT is stored in the browser's `localStorage` after login/register and attached as `Authorization: Bearer <token>` on every subsequent request.
-
-The dashboard exists to make the API's behavior visible, not to be a full application — see [Design Decisions](DECISIONS.md) for why it's scoped this way.
