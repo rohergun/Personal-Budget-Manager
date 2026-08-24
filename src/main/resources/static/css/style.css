@@ -1,9 +1,22 @@
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: #f4f5f7;
+}
+
+.navbar .nav-link {
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.navbar .nav-link:hover {
+    color: #212529;
 }
 
 .auth-card {
