@@ -15,11 +15,20 @@ public class SwaggerConfig {
     public OpenAPI openAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Student Budget Manager API")
+                        .title("Budget Manager API")
                         .version("1.0")
-                        .description("Personal Budget Management API." +
-                                     "Try live the live dashboard at [/login.html](/login.html). " +
-                                     "[← Back to home](/)")
+                        .description(
+                                """
+                                Rest API for managing personal budgets, expenses and financial data.
+                                
+                                #### Quick Links:
+                                
+                                - [Home Page](/index.html)
+                                - [Login](/login.html) — Login to see changes in the dashboard
+                                - [Register](/register.html) — Create a new account
+                                """
+                        )
+
                 )
                 .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
                 .components(new Components()
