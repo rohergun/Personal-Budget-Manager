@@ -1,7 +1,10 @@
 [![Backend CI](https://github.com/rohergun/Personal-Budget-Manager/actions/workflows/build.yaml/badge.svg)](https://github.com/rohergun/Personal-Budget-Manager/actions/workflows/build.yaml)
+[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://personal-budget-manager-vwce.onrender.com/)
 
 # Personal BudgetManager 
 A personal finance management REST API built for students or professionals to track expenses, manage budgets, and work toward financial goals.
+
+*Note: hosted on a free tier — the first request after a period of inactivity may take up to a minute to respond while the service wakes up.*
 
 ## Table of Contents
 
@@ -17,24 +20,21 @@ A personal finance management REST API built for students or professionals to tr
 
 ## Introduction
 
-BudgetManger is a backend service for personal finance app.
-It handles user authentication, expense and income tracking, category-based budgeting, and financial goal management, with monthly spending summaries tying transactions and budgets together.
+BudgetManager is a **Backend System** and provides **REST APIs** for personal finance app.
 
-### Tech Stack & Tools
+It handles user authentication, expense and income tracking, category-based budgeting, and financial goal management,
+with monthly spending summaries tying transactions and budgets together.
+
+### Tech Stack 
 
 - Java 21
 - Spring Boot
 - Spring Security (JWT authentication)
 - Spring Data JPA / Hibernate
-- Spring Cache (Caffeine)
+- Spring Cache
 - PostgreSQL
 - H2 Database (in-memory, for tests)
-- Docker & Docker Compose
-- Maven
-- Jakarta Validation
-- Lombok
-- MapStruct (entity ↔ DTO mapping)
-- JJWT (JWT generation/validation)
+- Docker 
 - JUnit 5 & Mockito (unit and controller tests)
 - springdoc-openapi (Swagger UI)
 - Javascript, Bootstrap & HTML 
@@ -53,6 +53,8 @@ It handles user authentication, expense and income tracking, category-based budg
 - **Ownership-scoped access** — every resource lookup is scoped to the authenticated user; no user can read or modify another user's data
 - **Static web dashboard** — login/register/dashboard UI showing the API's data live, without needing Swagger to see it in action
 - **Response caching** — Caching on the monthly summary endpoint, with automatic invalidation whenever a transaction or budget changes
+
+
 ## Getting Started
 
 ### Prerequisites
@@ -121,9 +123,7 @@ Tests run against an in-memory H2 database so, **starting up Docker isn't requir
 
 ## Roadmap
 
-- [x] Read-through caching on low-write, high-read endpoints 
-- [ ] CSV imports
-- [ ] Export report generation
+- [x] *Read-through caching on low-write, high-read endpoints*
+- [x] *Deployment*
 - [ ] Recurring Transfers (using @Scheduled, auto creating Transactions)
 - [ ] Rate limiting on auth endpoints 
-- [ ] Deployment
