@@ -36,7 +36,8 @@ public class SecurityConfig {
                                         "/v3/api-docs/**",
                                         "/error",
                                         "/",
-                                        "/*.html", "/js/**", "/css/**")
+                                        "/*.html", "/js/**", "/css/**",
+                                        "/docs/**")
                                 .permitAll().anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
