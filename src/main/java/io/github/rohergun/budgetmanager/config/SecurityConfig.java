@@ -1,5 +1,7 @@
-package io.github.rohergun.budgetmanager.security;
+package io.github.rohergun.budgetmanager.config;
 
+import io.github.rohergun.budgetmanager.security.CustomUserDetailsService;
+import io.github.rohergun.budgetmanager.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
