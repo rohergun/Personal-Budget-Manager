@@ -40,12 +40,7 @@ public class SummaryServiceImpl implements SummaryService{
         BigDecimal net = totalIncome.subtract(totalExpenses);
 
         // How much was actually spent per category this month (expenses only)
-        Map<UUID, BigDecimal> spentByCategory = transactions.stream()
-                .filter(t -> t.getType() == TransactionType.EXPENSE)
-                .collect(Collectors.groupingBy(
-                        t -> t.getCategory().getId(),
-                        Collectors.reducing(BigDecimal.ZERO, Transaction::getAmount, BigDecimal::add)
-                ));
+        Map<UUID, BigDecimal> spentByCategory = extractMonthlyExpensePerCategory(transactions);
 
         // Category names, sourced from transactions first
         Map<UUID, String> categoryNames = transactions.stream()
@@ -88,4 +83,19 @@ public class SummaryServiceImpl implements SummaryService{
                 .map(Transaction::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
+
+    private Map<UUID, BigDecimal> extractMonthlyExpensePerCategory(List<Transaction> transactions) {
+         return transactions.stream()
+                .filter(t -> t.getType() == TransactionType.EXPENSE)
+                .collect(Collectors.groupingBy(
+                        t -> t.getCategory().getId(),
+                        Collectors.reducing(BigDecimal.ZERO, Transaction::getAmount, BigDecimal::add)
+                ));
+    }
+
+    private Map<UUID, String> extractCategoryNamesFromTransactions() {
+        // Todo
+        return null;
+    }
+
 }
