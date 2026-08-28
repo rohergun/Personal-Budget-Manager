@@ -57,7 +57,17 @@ public class SummaryServiceImpl implements SummaryService{
         allCategoryIds.addAll(budgetLimitsByCategory.keySet());
         allCategoryIds.addAll(spentByCategory.keySet());
 
-        List<CategorySpendingResponse> byCategory = allCategoryIds.stream()
+        List<CategorySpendingResponse> byCategory = buildCategoryBreakdown(
+                allCategoryIds, categoryNames, spentByCategory, budgetLimitsByCategory);
+
+        return new MonthlySummaryResponse(month, totalIncome, totalExpenses, net, byCategory);
+    }
+
+    private List<CategorySpendingResponse> buildCategoryBreakdown(Set<UUID> allCategoryIds,
+                                                                  Map<UUID, String> categoryNames,
+                                                                  Map<UUID, BigDecimal> spentByCategory,
+                                                                  Map<UUID, BigDecimal> budgetLimitsByCategory) {
+        return allCategoryIds.stream()
                 .map(categoryId -> new CategorySpendingResponse(
                         categoryId,
                         categoryNames.get(categoryId),
@@ -65,8 +75,6 @@ public class SummaryServiceImpl implements SummaryService{
                         budgetLimitsByCategory.get(categoryId) // null if no budget exists
                 ))
                 .toList();
-
-        return new MonthlySummaryResponse(month, totalIncome, totalExpenses, net, byCategory);
     }
 
     private BigDecimal sumByType(List<Transaction> transactions, TransactionType type) {
