@@ -47,11 +47,8 @@ public class SummaryServiceImpl implements SummaryService{
 
         // Every budget this user has, keyed by category — the "must always appear" set
         List<Budget> budgets = budgetRepository.findAllByUserId(userId);
-        Map<UUID, BigDecimal> budgetLimitsByCategory = budgets.stream()
-                .collect(Collectors.toMap(
-                        budget -> budget.getCategory().getId(),
-                        Budget::getMonthlyLimit
-                ));
+        Map<UUID, BigDecimal> budgetLimitsByCategory = extractBudgetLimitsPerCategory(budgets);
+
         budgets.forEach(budget ->
                 categoryNames.putIfAbsent(budget.getCategory().getId(), budget.getCategory().getName()));
 
@@ -97,4 +94,11 @@ public class SummaryServiceImpl implements SummaryService{
                 ));
     }
 
+    private Map<UUID, BigDecimal> extractBudgetLimitsPerCategory(List<Budget> budgets) {
+        return budgets.stream()
+                .collect(Collectors.toMap(
+                        budget -> budget.getCategory().getId(),
+                        Budget::getMonthlyLimit
+                ));
+    }
 }
