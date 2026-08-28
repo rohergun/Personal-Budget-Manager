@@ -43,12 +43,7 @@ public class SummaryServiceImpl implements SummaryService{
         Map<UUID, BigDecimal> spentByCategory = extractMonthlyExpensePerCategory(transactions);
 
         // Category names, sourced from transactions first
-        Map<UUID, String> categoryNames = transactions.stream()
-                .collect(Collectors.toMap(
-                        t -> t.getCategory().getId(),
-                        t -> t.getCategory().getName(),
-                        (existing, replacement) -> existing
-                ));
+        Map<UUID, String> categoryNames = extractCategoryNamesFromTransactions(transactions);
 
         // Every budget this user has, keyed by category — the "must always appear" set
         List<Budget> budgets = budgetRepository.findAllByUserId(userId);
@@ -93,9 +88,13 @@ public class SummaryServiceImpl implements SummaryService{
                 ));
     }
 
-    private Map<UUID, String> extractCategoryNamesFromTransactions() {
-        // Todo
-        return null;
+    private Map<UUID, String> extractCategoryNamesFromTransactions(List<Transaction> transactions) {
+        return  transactions.stream()
+                .collect(Collectors.toMap(
+                        t -> t.getCategory().getId(),
+                        t -> t.getCategory().getName(),
+                        (existing, replacement) -> existing
+                ));
     }
 
 }
