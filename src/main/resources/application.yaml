@@ -33,3 +33,12 @@ jwt:
 logging:
   level:
     org.hibernate.stat: DEBUG
+
+management:
+  endpoints:
+    web:
+     exposure:
+       include: health, info
+  endpoint:
+    health:
+      show-details: when_authorized
