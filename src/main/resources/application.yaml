@@ -42,3 +42,10 @@ management:
   endpoint:
     health:
       show-details: always
+
+info:
+  app:
+    name: BudgetManager
+    description: Personal finance management API
+  build:
+    version: 1.0.0
