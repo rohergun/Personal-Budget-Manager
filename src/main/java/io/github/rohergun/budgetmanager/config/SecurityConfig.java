@@ -39,7 +39,8 @@ public class SecurityConfig {
                                         "/error",
                                         "/",
                                         "/*.html", "/js/**", "/css/**",
-                                        "/docs/**")
+                                        "/docs/**",
+                                        "/actuator/health")
                                 .permitAll().anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
