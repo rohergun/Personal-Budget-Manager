@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.UUID;
 
@@ -102,7 +103,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         YearMonth month = YearMonth.from(transaction.getTransactionDate());
 
-        transactionRepository.deleteById(transactionId);
+        transaction.setDeletedAt(LocalDateTime.now());
         evictSummaryCache(userId, month);
     }
 
