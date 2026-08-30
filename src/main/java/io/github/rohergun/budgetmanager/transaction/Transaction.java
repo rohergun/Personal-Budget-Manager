@@ -36,4 +36,7 @@ public class Transaction extends BaseEntity {
 
     @Column(nullable = false, name = "transaction_date")
     private LocalDateTime transactionDate;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 }
