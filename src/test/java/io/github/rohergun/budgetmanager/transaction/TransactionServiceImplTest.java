@@ -250,6 +250,16 @@ class TransactionServiceImplTest {
     }
 
     @Test
+    void deleteTransaction_throwsTransactionNotFound_whenAlreadySoftDeleted() {
+        when(transactionRepository.findByIdAndUserId(transactionId, currentUserId))
+                .thenReturn(Optional.empty()); // repository query excludes soft-deleted rows
+
+        assertThatThrownBy(() -> transactionService.deleteTransaction(currentUserId, transactionId))
+                .isInstanceOf(BudgetManagerException.class)
+                .hasFieldOrPropertyWithValue("errorMessage", DomainErrorMessage.TRANSACTION_NOT_FOUND);
+    }
+
+    @Test
     void deleteTransaction_throwsTransactionNotFound_whenMissingOrNotOwned() {
         when(transactionRepository.findByIdAndUserId(transactionId, currentUserId))
                 .thenReturn(Optional.empty());
