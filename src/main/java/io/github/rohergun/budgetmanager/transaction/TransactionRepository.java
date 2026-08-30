@@ -13,18 +13,18 @@ import java.util.UUID;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
+    @Query("select t from Transaction t where t.id = :id and t.user.id = :userId and t.deletedAt is null")
     Optional<Transaction> findByIdAndUserId(UUID id, UUID userId);
 
     @Query(
-            value = "select t from Transaction t join fetch t.category where t.user.id = :userId",
-            countQuery = "select count(t) from Transaction t where t.user.id = :userId"
+            value = "select t from Transaction t join fetch t.category where t.user.id = :userId and t.deletedAt is null",
+            countQuery = "select count(t) from Transaction t where t.user.id = :userId and t.deletedAt is null"
     )
     Page<Transaction> findAllByUserId(UUID userId, Pageable pageable);
 
-    boolean existsByIdAndUserId(UUID id, UUID userId);
 
     @Query("select t from Transaction t join fetch t.category " +
-            "where t.user.id = :userId and t.transactionDate between :start and :end")
+            "where t.user.id = :userId and t.transactionDate between :start and :end and t.deletedAt is null")
     List<Transaction> findAllByUserIdAndTransactionDateBetween(
             UUID userId, LocalDateTime start, LocalDateTime end);
 
