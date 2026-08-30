@@ -244,7 +244,8 @@ class TransactionServiceImplTest {
 
         transactionService.deleteTransaction(currentUserId, transactionId);
 
-        verify(transactionRepository).deleteById(transactionId);
+        assertThat(existingTransaction.getDeletedAt()).isNotNull();
+        verify(transactionRepository, never()).deleteById(any());
         verify(cache).evict(currentUserId + "-" + month);
     }
 
