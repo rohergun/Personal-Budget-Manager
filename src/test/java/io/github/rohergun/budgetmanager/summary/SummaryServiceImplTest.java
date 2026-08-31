@@ -36,6 +36,8 @@ class SummaryServiceImplTest {
     @Mock
     private BudgetRepository budgetRepository;
 
+    private SummaryAggregator summaryAggregator;
+
     @InjectMocks
     private SummaryServiceImpl summaryService;
 
@@ -79,6 +81,9 @@ class SummaryServiceImplTest {
                 .user(user)
                 .build();
         entertainmentCategory.setId(UUID.randomUUID());
+
+        summaryAggregator = new SummaryAggregator();
+        summaryService = new SummaryServiceImpl(transactionRepository, budgetRepository, summaryAggregator);
     }
 
     private Transaction transaction(BigDecimal amount, TransactionType type, Category category, LocalDateTime date) {
