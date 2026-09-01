@@ -14,7 +14,6 @@ A personal finance management REST API built for students or professionals to tr
     - [Prerequisites](#prerequisites)
     - [Installation](#installation)
 - [Documentation](#documentation)
-- [Testing](#testing)
 - [Roadmap](#roadmap)
 
 
@@ -25,34 +24,32 @@ BudgetManager is a **Backend System** and provides **REST APIs** for personal fi
 It handles user authentication, expense and income tracking, category-based budgeting, and financial goal management,
 with monthly spending summaries tying transactions and budgets together.
 
-### Tech Stack 
+## Features
+
+- User authentication (Stateless authentication using JWT).
+- Full CRUD management of  Transactions, Categories, Budgets, Financial Goals.
+- Users can read monthly summary of net transactions (incomes, expenses) against user set budgets.
+- Transactions can be categorized by users.
+- Dashboard summarizing account activity. 
+- Faster response time for frequently accessed endpoints via caching.
+- Testing suits for service and controller layers, automated with CI/CD.
+- Containerized with Docker and deployed live with interactive API documentation.
+- Health check endpoints for monitoring application status.
+
+### Tech Stack
 
 - Java 21
 - Spring Boot
-- Spring Security (JWT authentication)
+- Spring Security 
 - Spring Data JPA / Hibernate
 - Spring Cache
 - PostgreSQL
 - H2 Database (in-memory, for tests)
-- Docker 
+- Docker
 - JUnit 5 & Mockito (unit and controller tests)
-- springdoc-openapi (Swagger UI)
-- Javascript, Bootstrap & HTML 
-
-
-## Features
-
-- **User authentication** — registration and login secured with JWT (stateless, no server-side session)
-- **User profile management** — view/update profile, change password, delete account
-- **Categories** — user-owned, uniquely named expense/income categories
-- **Budgets** — one monthly limit per category, per user
-- **Transactions** — income and expense entries tied to a category, with date validation (no future-dated entries)
-- **Financial goals** — savings targets with progress tracking via a dedicated contribution endpoint
-- **Monthly summaries** — aggregated income, expenses, and per-category spending vs. budget for a given month
-- **Consistent error handling** — a global exception handler returning structured, predictable error responses
-- **Ownership-scoped access** — every resource lookup is scoped to the authenticated user; no user can read or modify another user's data
-- **Static web dashboard** — login/register/dashboard UI showing the API's data live, without needing Swagger to see it in action
-- **Response caching** — Caching on the monthly summary endpoint, with automatic invalidation whenever a transaction or budget changes
+- springdoc-openapi (Swagger UI)\
+- Spring Boot Actuator
+- Render
 
 
 ## Getting Started
@@ -60,66 +57,51 @@ with monthly spending summaries tying transactions and budgets together.
 ### Prerequisites
 
 - Java 21
-- Maven (or the included `./mvnw` wrapper)
-- Docker and Docker Compose (for PostgreSQL and pgAdmin)
+- Maven
+- Docker Compose for local development
 ### Installation
 
 1. **Clone the repository**
 ```bash
-   git clone https://github.com/rohergun/BudgetManager.git
+   git clone https://github.com/rohergun/Personal-Budget-Manager
    cd BudgetManager
 ```
 
 2. **Start the database**
+
+Make sure docker is running.
+
 ```bash
    docker compose up -d
 ```
-This starts PostgreSQL and pgAdmin as defined in `docker-compose.yaml`.
 
-3. **(Optional) Configure environment values**
-
-Copy the example configuration and fill in your own values (JWT secret, DB credentials if changed from defaults).
-
-4. **Run the application**
+3. **Run the application**
 ```bash
-   ./mvnw spring-boot:run
+   ./mvnw clean spring-boot:run
 ```
 
-5. **(Optional) Try Dashboard**
+4. **Testing**
 
-Dashboard UI displaying changes from user's account and, register -> login flow.
-```
-   http://localhost:8080/login.html
-```
-Register an account, log in, and the dashboard will show your data pulled live from the API.
+For testing, docker is not required all testing done with in-memory H2 Database. 
 
-6. **Explore the API**
-   Swagger UI is available at:
+```bash
+  ./mvnw clean test
+```
+
+5. **Explore API locally**
+
 ```
    http://localhost:8080/swagger-ui/index.html
 ```
 
-7. **Run the tests**
-```bash
-   ./mvnw clean test
-```
-Tests run against an in-memory H2 database so, **starting up Docker isn't required** to run the test suite.
 
 ## Documentation
 
-**This README covers what the project does and how to run it. Deeper technical documentation lives in `docs/`:**
+- [Class Diagram](docs/class-diagram.mmd) - class diagram with entity relationships
 
-- **[Architecture](docs/ARCHITECTURE.md)** — project structure, layers, class diagram and architecture decisions section. 
+- [API Docs](https://personal-budget-manager-vwce.onrender.com/swagger-ui/index.html) - live, interactive Swagger UI
 
-- **[Design Decisions](docs/DECISIONS.md)** — project system design, key design decisions, restapi design decisions
-
-* Quick peek for the BudgetManager's UML Diagram : [Class-Diagram](docs/class-diagram.mmd) 
-
-## Testing
-
-- **Unit tests** (JUnit 5 + Mockito) cover every service's business logic: ownership checks, uniqueness rules, and domain exception paths.
-- **Controller tests** (`@WebMvcTest` + MockMvc) cover request validation, status codes, and correct delegation to the service layer, with Spring Security's test support used to simulate an authenticated principal.
-- **Context load test** (`@SpringBootTest`) runs against an in-memory H2 database (profile `test`), so the full test suite runs without requiring Docker/PostgreSQL.
+- [Architecture Documentation](docs/) - records of architecture decisions
 
 ## Roadmap
 
