@@ -15,6 +15,14 @@ import java.util.stream.Collectors;
 @Component
 public class SummaryAggregator {
 
+    public record Totals(BigDecimal totalIncome, BigDecimal totalExpenses, BigDecimal net) { }
+
+    public Totals computeTotals(List<Transaction> transactions) {
+        BigDecimal totalIncome = sumByType(transactions, TransactionType.INCOME);
+        BigDecimal totalExpenses = sumByType(transactions, TransactionType.EXPENSE);
+        BigDecimal net = totalIncome.subtract(totalExpenses);
+        return new Totals(totalIncome, totalExpenses, net);
+    }
 
     public List<CategorySpendingResponse> buildCategoryBreakdown(List<Transaction> transactions, List<Budget> budgets){
 

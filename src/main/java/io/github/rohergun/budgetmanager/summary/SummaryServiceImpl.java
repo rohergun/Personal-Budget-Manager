@@ -36,16 +36,13 @@ public class SummaryServiceImpl implements SummaryService{
         List<Transaction> transactions =
                 transactionRepository.findAllByUserIdAndTransactionDateBetween(userId, start, end);
 
-        BigDecimal totalIncome = summaryAggregator.sumByType(transactions, TransactionType.INCOME);
-        BigDecimal totalExpenses = summaryAggregator.sumByType(transactions, TransactionType.EXPENSE);
-        BigDecimal net = totalIncome.subtract(totalExpenses);
-
         List<Budget> budgets = budgetRepository.findAllByUserId(userId);
 
+        SummaryAggregator.Totals totals = summaryAggregator.computeTotals(transactions);
 
         List<CategorySpendingResponse> byCategory = summaryAggregator.buildCategoryBreakdown(transactions, budgets);
 
-        return new MonthlySummaryResponse(month, totalIncome, totalExpenses, net, byCategory);
+        return new MonthlySummaryResponse(month, totals.totalIncome(), totals.totalExpenses(), totals.net(), byCategory);
     }
 
 }
