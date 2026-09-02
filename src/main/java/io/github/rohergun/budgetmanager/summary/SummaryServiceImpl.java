@@ -36,28 +36,13 @@ public class SummaryServiceImpl implements SummaryService{
         List<Transaction> transactions =
                 transactionRepository.findAllByUserIdAndTransactionDateBetween(userId, start, end);
 
-        BigDecimal totalIncome = summaryAggregator.sumByType(transactions, TransactionType.INCOME);
-        BigDecimal totalExpenses = summaryAggregator.sumByType(transactions, TransactionType.EXPENSE);
-        BigDecimal net = totalIncome.subtract(totalExpenses);
-
-        Map<UUID, BigDecimal> spentByCategory = summaryAggregator.extractMonthlyExpensePerCategory(transactions);
-
-        Map<UUID, String> categoryNames = summaryAggregator.extractCategoryNamesFromTransactions(transactions);
-
         List<Budget> budgets = budgetRepository.findAllByUserId(userId);
-        Map<UUID, BigDecimal> budgetLimitsByCategory = summaryAggregator.extractBudgetLimitsPerCategory(budgets);
 
-        budgets.forEach(budget ->
-                categoryNames.putIfAbsent(budget.getCategory().getId(), budget.getCategory().getName()));
+        SummaryAggregator.Totals totals = summaryAggregator.computeTotals(transactions);
 
-        Set<UUID> allCategoryIds = new HashSet<>();
-        allCategoryIds.addAll(budgetLimitsByCategory.keySet());
-        allCategoryIds.addAll(spentByCategory.keySet());
+        List<CategorySpendingResponse> byCategory = summaryAggregator.buildCategoryBreakdown(transactions, budgets);
 
-        List<CategorySpendingResponse> byCategory = summaryAggregator.buildCategoryBreakdown(
-                allCategoryIds, categoryNames, spentByCategory, budgetLimitsByCategory);
-
-        return new MonthlySummaryResponse(month, totalIncome, totalExpenses, net, byCategory);
+        return new MonthlySummaryResponse(month, totals.totalIncome(), totals.totalExpenses(), totals.net(), byCategory);
     }
 
 }

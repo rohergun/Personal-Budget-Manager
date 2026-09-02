@@ -7,10 +7,7 @@ import io.github.rohergun.budgetmanager.transaction.TransactionType;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -18,17 +15,28 @@ import java.util.stream.Collectors;
 @Component
 public class SummaryAggregator {
 
-    public BigDecimal sumByType(List<Transaction> transactions, TransactionType type) {
-        return transactions.stream()
-                .filter(t -> t.getType() == type)
-                .map(Transaction::getAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    public record Totals(BigDecimal totalIncome, BigDecimal totalExpenses, BigDecimal net) { }
+
+    public Totals computeTotals(List<Transaction> transactions) {
+        BigDecimal totalIncome = sumByType(transactions, TransactionType.INCOME);
+        BigDecimal totalExpenses = sumByType(transactions, TransactionType.EXPENSE);
+        BigDecimal net = totalIncome.subtract(totalExpenses);
+        return new Totals(totalIncome, totalExpenses, net);
     }
 
-    public List<CategorySpendingResponse> buildCategoryBreakdown(Set<UUID> allCategoryIds,
-                                                                  Map<UUID, String> categoryNames,
-                                                                  Map<UUID, BigDecimal> spentByCategory,
-                                                                  Map<UUID, BigDecimal> budgetLimitsByCategory) {
+    public List<CategorySpendingResponse> buildCategoryBreakdown(List<Transaction> transactions, List<Budget> budgets){
+
+        Map<UUID, BigDecimal> spentByCategory = extractMonthlyExpensePerCategory(transactions);
+        Map<UUID, String> categoryNames = extractCategoryNamesFromTransactions(transactions);
+        Map<UUID, BigDecimal> budgetLimitsByCategory = extractBudgetLimitsPerCategory(budgets);
+
+        budgets.forEach(budget ->
+                categoryNames.putIfAbsent(budget.getCategory().getId(), budget.getCategory().getName()));
+
+        Set<UUID> allCategoryIds = new HashSet<>();
+        allCategoryIds.addAll(budgetLimitsByCategory.keySet());
+        allCategoryIds.addAll(spentByCategory.keySet());
+
         return allCategoryIds.stream()
                 .map(categoryId -> new CategorySpendingResponse(
                         categoryId,
@@ -37,6 +45,13 @@ public class SummaryAggregator {
                         budgetLimitsByCategory.get(categoryId)
                 ))
                 .toList();
+    }
+
+    public BigDecimal sumByType(List<Transaction> transactions, TransactionType type) {
+        return transactions.stream()
+                .filter(t -> t.getType() == type)
+                .map(Transaction::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public Map<UUID, BigDecimal> extractMonthlyExpensePerCategory(List<Transaction> transactions) {
