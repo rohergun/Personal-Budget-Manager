@@ -7,6 +7,7 @@ import io.github.rohergun.budgetmanager.financialgoal.dto.FinancialGoalUpdateReq
 import io.github.rohergun.budgetmanager.security.CustomUserDetails;
 import io.github.rohergun.budgetmanager.security.CustomUserDetailsService;
 import io.github.rohergun.budgetmanager.security.JwtService;
+import io.github.rohergun.budgetmanager.security.LoginRateLimiter;
 import io.github.rohergun.budgetmanager.user.AppUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,6 +52,9 @@ class FinancialGoalControllerTest {
 
     @MockitoBean
     private CustomUserDetailsService userDetailsService;
+
+    @MockitoBean
+    private LoginRateLimiter loginRateLimiter;
 
     private UUID currentUserId;
     private UUID goalId;

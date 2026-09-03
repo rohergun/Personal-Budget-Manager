@@ -3,6 +3,7 @@ package io.github.rohergun.budgetmanager.summary;
 import io.github.rohergun.budgetmanager.security.CustomUserDetails;
 import io.github.rohergun.budgetmanager.security.CustomUserDetailsService;
 import io.github.rohergun.budgetmanager.security.JwtService;
+import io.github.rohergun.budgetmanager.security.LoginRateLimiter;
 import io.github.rohergun.budgetmanager.summary.dto.CategorySpendingResponse;
 import io.github.rohergun.budgetmanager.summary.dto.MonthlySummaryResponse;
 import io.github.rohergun.budgetmanager.user.AppUser;
@@ -41,6 +42,9 @@ class SummaryControllerTest {
 
     @MockitoBean
     private CustomUserDetailsService userDetailsService;
+
+    @MockitoBean
+    private LoginRateLimiter loginRateLimiter;
 
     private UUID currentUserId;
     private Authentication authentication;

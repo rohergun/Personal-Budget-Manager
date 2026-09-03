@@ -3,6 +3,7 @@ package io.github.rohergun.budgetmanager.transaction;
 import io.github.rohergun.budgetmanager.security.CustomUserDetails;
 import io.github.rohergun.budgetmanager.security.CustomUserDetailsService;
 import io.github.rohergun.budgetmanager.security.JwtService;
+import io.github.rohergun.budgetmanager.security.LoginRateLimiter;
 import io.github.rohergun.budgetmanager.transaction.dto.CreateTransactionRequest;
 import io.github.rohergun.budgetmanager.transaction.dto.TransactionResponse;
 import io.github.rohergun.budgetmanager.transaction.dto.TransactionUpdateRequest;
@@ -50,6 +51,9 @@ class TransactionControllerTest {
 
     @MockitoBean
     private CustomUserDetailsService userDetailsService;
+
+    @MockitoBean
+    private LoginRateLimiter loginRateLimiter;
 
     private UUID currentUserId;
     private UUID transactionId;
