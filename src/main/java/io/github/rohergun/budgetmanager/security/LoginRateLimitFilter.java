@@ -22,7 +22,7 @@ public class LoginRateLimitFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        if ("POST".equalsIgnoreCase(request.getMethod()) && "api/v1/auth/login".equals(request.getRequestURI())) {
+        if ("POST".equalsIgnoreCase(request.getMethod()) && "/api/v1/auth/login".equals(request.getRequestURI())) {
             String clientIp = request.getRemoteAddr();
 
             if (!rateLimiter.tryConsume(clientIp)) {
