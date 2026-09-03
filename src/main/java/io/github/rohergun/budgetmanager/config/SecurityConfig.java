@@ -2,6 +2,9 @@ package io.github.rohergun.budgetmanager.config;
 
 import io.github.rohergun.budgetmanager.security.CustomUserDetailsService;
 import io.github.rohergun.budgetmanager.security.JwtAuthenticationFilter;
+import io.github.rohergun.budgetmanager.security.LoginRateLimitFilter;
+import io.github.rohergun.budgetmanager.security.LoginRateLimiter;
+import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +27,7 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter filter;
     private final CustomUserDetailsService userDetailsService;
+    private final LoginRateLimitFilter rateLimiterFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -39,11 +43,11 @@ public class SecurityConfig {
                                         "/error",
                                         "/",
                                         "/*.html", "/js/**", "/css/**",
-                                        "/docs/**",
                                         "/actuator/health")
                                 .permitAll().anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
+                .addFilterBefore(rateLimiterFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
