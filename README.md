@@ -27,6 +27,7 @@ with monthly spending summaries tying transactions and budgets together.
 ## Features
 
 - User authentication (Stateless authentication using JWT).
+- Rate limiting on login attempts.
 - Full CRUD management of  Transactions, Categories, Budgets, Financial Goals.
 - Users can read monthly summary of net transactions (incomes, expenses) against user set budgets.
 - Transactions can be categorized by users.
@@ -47,8 +48,9 @@ with monthly spending summaries tying transactions and budgets together.
 - H2 Database (in-memory, for tests)
 - Docker
 - JUnit 5 & Mockito (unit and controller tests)
-- springdoc-openapi (Swagger UI)\
+- springdoc-openapi (Swagger UI)
 - Spring Boot Actuator
+- Bucket4J
 - Render
 
 
@@ -107,5 +109,5 @@ For testing, docker is not required all testing done with in-memory H2 Database.
 
 - [x] *Read-through caching on low-write, high-read endpoints*
 - [x] *Deployment*
+- [x] *Rate limiting on auth endpoints*
 - [ ] Recurring Transfers (using @Scheduled, auto creating Transactions)
-- [ ] Rate limiting on auth endpoints 
