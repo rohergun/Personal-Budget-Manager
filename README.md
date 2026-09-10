@@ -45,6 +45,7 @@ with monthly spending summaries tying transactions and budgets together.
 - Spring Boot
 - Spring Security 
 - Spring Data JPA / Hibernate
+- Flyway (database migrations)
 - Spring Cache
 - PostgreSQL
 - H2 Database (in-memory, for tests)
@@ -83,6 +84,8 @@ Make sure docker is running.
 ```bash
    ./mvnw clean spring-boot:run
 ```
+
+Database schema is managed by Flyway and migrates automatically on startup — no manual step needed. Migration files live in `src/main/resources/db/migration`; see [ADR 007](docs/adr/007-flyway-database-migrations.md) for details.
 
 4. **Testing**
 
