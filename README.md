@@ -1,6 +1,8 @@
 [![Backend CI](https://github.com/rohergun/Personal-Budget-Manager/actions/workflows/build.yaml/badge.svg)](https://github.com/rohergun/Personal-Budget-Manager/actions/workflows/build.yaml)
 [![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://personal-budget-manager-vwce.onrender.com/)
 
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://documenter.getpostman.com/view/53983536/2sBYAyroQ3)
+
 # Personal BudgetManager 
 A personal finance management REST API built for students or professionals to track expenses, manage budgets, and work toward financial goals.
 
