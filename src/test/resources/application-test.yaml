@@ -1,8 +1,10 @@
 spring:
+  flyway:
+    enabled: false
   datasource:
     url: jdbc:h2:mem:testdb;MODE=PostgreSQL
     driver-class-name: org.h2.Driver
-    username: sa
+    username:
     password:
   jpa:
     hibernate:
