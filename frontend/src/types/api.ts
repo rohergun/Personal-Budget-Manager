@@ -81,6 +81,33 @@ export interface BudgetUpdateRequest {
   categoryId: string;
 }
 
+export type TransactionType = "INCOME" | "EXPENSE";
+
+export interface TransactionResponse {
+  id: string;
+  amount: number;
+  type: TransactionType;
+  categoryId: string | null;
+  categoryName: string | null;
+  transactionDate: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateTransactionRequest {
+  amount: number;
+  type: TransactionType;
+  categoryId: string;
+  transactionDate: string;
+}
+
+export interface TransactionUpdateRequest {
+  amount: number;
+  type: TransactionType;
+  categoryId: string;
+  transactionDate: string;
+}
+
 export interface PageResponse<T> {
   content: T[];
   totalElements: number;
