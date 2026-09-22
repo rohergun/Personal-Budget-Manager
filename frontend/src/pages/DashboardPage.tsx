@@ -115,7 +115,7 @@ function StatCard({
   return (
     <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-100">
       <p className="text-sm text-slate-500">{label}</p>
-      <p className={`mt-1 text-2xl font-semibold ${tone === "positive" ? "text-emerald-600" : "text-slate-900"}`}>
+      <p className={`mt-1 text-2xl font-semibold ${tone === "positive" ? "text-emerald-600" : "text-red-600"}`}>
         {numberFormat.format(value)}
       </p>
     </div>
