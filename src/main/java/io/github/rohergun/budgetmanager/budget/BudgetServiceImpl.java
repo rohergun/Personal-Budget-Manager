@@ -32,6 +32,7 @@ public class BudgetServiceImpl implements BudgetService {
     private final CacheManager cacheManager;
 
     @Override
+    @Transactional(readOnly = true)
     public BudgetResponse getBudgetById(UUID userId, UUID budgetId) {
         Budget budget = budgetRepository.findByIdAndUserId(budgetId, userId)
                 .orElseThrow(() -> new BudgetManagerException(DomainErrorMessage.BUDGET_NOT_FOUND));
@@ -40,12 +41,14 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<BudgetResponse> listAllByCurrentUser(UUID userId, Pageable pageable) {
         Page<Budget> budgets = budgetRepository.findAllByUserId(userId, pageable);
         return budgets.map(mapper::toResponse);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BudgetResponse getBudgetByCategory(UUID userId, UUID categoryId) {
         Budget budget = budgetRepository.findByUserIdAndCategoryId(userId, categoryId)
                 .orElseThrow(() -> new BudgetManagerException(DomainErrorMessage.BUDGET_NOT_FOUND));
