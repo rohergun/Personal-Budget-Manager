@@ -12,3 +12,5 @@ Architecture decisions for BudgetManager, recorded as individual ADRs.
 4. [Set Category to null on delete](adr/004-set-category-to-null-on-delete.md)
 5. [Soft delete transactions only](adr/005-soft-delete-transactions-only.md)
 6. [Rate limiting on login endpoint](adr/006-rate-limiting-on-login.md)
+7. [Database Migrations](adr/007-flyway-database-migrations.md)
+8. [Spring Profiles](adr/008-spring-profiles-dev-prod.md)
