@@ -1,0 +1,26 @@
+# Production profile
+spring:
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        generate_statistics: false
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION:86400000}
+
+logging:
+  level:
+    org.hibernate.stat: WARN
+
+management:
+  endpoint:
+    health:
+      show-details: when-authorized
+      show-components: when-authorized

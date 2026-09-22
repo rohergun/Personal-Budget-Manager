@@ -85,6 +85,8 @@ Make sure docker is running.
    ./mvnw clean spring-boot:run
 ```
 
+Runs under the `dev` profile by default (no setup needed — defaults match the Docker Compose Postgres above). To override any value locally, copy `.env.example` to `.env` and edit it; see [ADR 008](docs/adr/008-spring-profiles-dev-prod.md) for how dev/prod profiles are split.
+
 Database schema is managed by Flyway and migrates automatically on startup — no manual step needed. Migration files live in `src/main/resources/db/migration`; see [ADR 007](docs/adr/007-flyway-database-migrations.md) for details.
 
 4. **Testing**
