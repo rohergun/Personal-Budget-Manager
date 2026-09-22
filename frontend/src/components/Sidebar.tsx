@@ -21,7 +21,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Transactions", to: "/app/transactions", icon: ArrowLeftRight, enabled: true },
   { label: "Budgets", to: "/app/budgets", icon: Wallet, enabled: true },
   { label: "Categories", to: "/app/categories", icon: Tags, enabled: true },
-  { label: "Financial Goals", to: "/app/goals", icon: Target, enabled: false },
+  { label: "Financial Goals", to: "/app/goals", icon: Target, enabled: true },
 ];
 
 export function Sidebar() {

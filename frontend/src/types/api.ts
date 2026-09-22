@@ -108,6 +108,35 @@ export interface TransactionUpdateRequest {
   transactionDate: string;
 }
 
+export interface FinancialGoalResponse {
+  id: string;
+  name: string;
+  description: string | null;
+  targetAmount: number;
+  currentAmount: number;
+  deadline: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateFinancialGoalRequest {
+  name: string;
+  description?: string;
+  targetAmount: number;
+  deadline: string;
+}
+
+export interface FinancialGoalUpdateRequest {
+  name: string;
+  description?: string;
+  targetAmount: number;
+  deadline: string;
+}
+
+export interface ContributeToGoalRequest {
+  amount: number;
+}
+
 export interface PageResponse<T> {
   content: T[];
   totalElements: number;
