@@ -43,3 +43,31 @@ export interface ApiError {
   message: string;
   details: string[];
 }
+
+export interface CategoryResponse {
+  id: string;
+  name: string;
+  description: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateCategoryRequest {
+  name: string;
+  description?: string;
+}
+
+export interface CategoryUpdateRequest {
+  name: string;
+  description?: string;
+}
+
+export interface PageResponse<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  number: number;
+  size: number;
+  first: boolean;
+  last: boolean;
+}

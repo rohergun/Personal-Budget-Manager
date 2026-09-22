@@ -2,6 +2,7 @@ import { Navigate, Route, BrowserRouter, Routes } from "react-router-dom";
 import { AppLayout } from "./components/AppLayout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
+import { CategoriesPage } from "./pages/CategoriesPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
@@ -26,6 +27,7 @@ function App() {
           >
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<DashboardPage />} />
+            <Route path="categories" element={<CategoriesPage />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

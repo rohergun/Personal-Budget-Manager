@@ -20,7 +20,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Dashboard", to: "/app/dashboard", icon: LayoutDashboard, enabled: true },
   { label: "Transactions", to: "/app/transactions", icon: ArrowLeftRight, enabled: false },
   { label: "Budgets", to: "/app/budgets", icon: Wallet, enabled: false },
-  { label: "Categories", to: "/app/categories", icon: Tags, enabled: false },
+  { label: "Categories", to: "/app/categories", icon: Tags, enabled: true },
   { label: "Financial Goals", to: "/app/goals", icon: Target, enabled: false },
 ];
 
