@@ -6,9 +6,12 @@ import type {
   PageResponse,
 } from "../types/api";
 
-export async function listCategories(page = 0): Promise<PageResponse<CategoryResponse>> {
+export async function listCategories(
+  page = 0,
+  size?: number,
+): Promise<PageResponse<CategoryResponse>> {
   const { data } = await apiClient.get<PageResponse<CategoryResponse>>("/api/v1/categories", {
-    params: { page },
+    params: { page, size },
   });
   return data;
 }

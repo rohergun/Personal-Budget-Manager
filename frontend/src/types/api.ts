@@ -62,6 +62,25 @@ export interface CategoryUpdateRequest {
   description?: string;
 }
 
+export interface BudgetResponse {
+  id: string;
+  monthlyLimit: number;
+  categoryId: string;
+  categoryName: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateBudgetRequest {
+  monthlyLimit: number;
+  categoryId: string;
+}
+
+export interface BudgetUpdateRequest {
+  monthlyLimit: number;
+  categoryId: string;
+}
+
 export interface PageResponse<T> {
   content: T[];
   totalElements: number;
