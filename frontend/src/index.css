@@ -11,6 +11,17 @@
   --color-brand-700: #1f3aae;
   --color-brand-800: #1e3389;
   --color-brand-900: #6e4bef;
+
+  --animate-marquee: marquee 40s linear infinite;
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
 }
 
 body {

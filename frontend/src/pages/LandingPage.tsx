@@ -1,5 +1,26 @@
 import { ArrowLeftRight, LineChart, Target, Wallet } from "lucide-react";
-import { FaGithub } from "react-icons/fa";
+import type { IconType } from "react-icons";
+import { FaGithub, FaJava } from "react-icons/fa";
+import {
+  SiApachemaven,
+  SiDocker,
+  SiFlyway,
+  SiGithubactions,
+  SiJsonwebtokens,
+  SiJunit5,
+  SiPostgresql,
+  SiReact,
+  SiReactrouter,
+  SiRender,
+  SiSpringboot,
+  SiSpringsecurity,
+  SiSwagger,
+  SiTailwindcss,
+  SiTypescript,
+  SiVercel,
+  SiVite,
+  SiVitest,
+} from "react-icons/si";
 import { Link } from "react-router-dom";
 
 const FEATURES = [
@@ -26,6 +47,48 @@ const FEATURES = [
 ];
 
 const REPO_URL = "https://github.com/rohergun/Personal-Budget-Manager";
+
+const TECH_STACK: { name: string; icon: IconType; color: string }[] = [
+  { name: "Java", icon: FaJava, color: "#E76F00" },
+  { name: "Spring Boot", icon: SiSpringboot, color: "#6DB33F" },
+  { name: "Spring Security", icon: SiSpringsecurity, color: "#6DB33F" },
+  { name: "PostgreSQL", icon: SiPostgresql, color: "#4169E1" },
+  { name: "Flyway", icon: SiFlyway, color: "#CC0200" },
+  { name: "JWT", icon: SiJsonwebtokens, color: "#D63AFF" },
+  { name: "Maven", icon: SiApachemaven, color: "#C71A36" },
+  { name: "JUnit 5", icon: SiJunit5, color: "#25A162" },
+  { name: "Swagger", icon: SiSwagger, color: "#85EA2D" },
+  { name: "Docker", icon: SiDocker, color: "#2496ED" },
+  { name: "React", icon: SiReact, color: "#61DAFB" },
+  { name: "TypeScript", icon: SiTypescript, color: "#3178C6" },
+  { name: "React Router", icon: SiReactrouter, color: "#CA4245" },
+  { name: "Tailwind CSS", icon: SiTailwindcss, color: "#06B6D4" },
+  { name: "Vite", icon: SiVite, color: "#646CFF" },
+  { name: "Vitest", icon: SiVitest, color: "#6E9F18" },
+  { name: "GitHub Actions", icon: SiGithubactions, color: "#2088FF" },
+  { name: "Render", icon: SiRender, color: "#46E3B7" },
+  { name: "Vercel", icon: SiVercel, color: "#000000" },
+];
+
+function TechMarquee() {
+  return (
+    <div className="group relative w-full overflow-hidden border-y border-slate-100 py-6 [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+      <ul className="flex w-max animate-marquee group-hover:[animation-play-state:paused] motion-reduce:animate-none">
+        {[...TECH_STACK, ...TECH_STACK].map(({ name, icon: Icon, color }, i) => (
+          <li
+            key={`${name}-${i}`}
+            aria-hidden={i >= TECH_STACK.length}
+            className="flex shrink-0 items-center gap-2 px-6 text-sm font-medium text-slate-400 transition-colors hover:text-[var(--brand)]"
+            style={{ "--brand": color } as React.CSSProperties}
+          >
+            <Icon className="h-6 w-6" aria-hidden="true" />
+            {name}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
 const TREND_POINTS: [number, number][] = [
   [0, 330], [80, 310], [150, 322], [230, 280], [300, 292], [380, 250],
@@ -150,7 +213,7 @@ export function LandingPage() {
         </div>
       </section>
 
-      <footer className="flex justify-center py-10">
+      <footer className="flex flex-col items-center gap-8 py-10">
         <a
           href={REPO_URL}
           target="_blank"
@@ -161,6 +224,7 @@ export function LandingPage() {
           <FaGithub className="h-5 w-5" aria-hidden="true" />
           View on GitHub
         </a>
+        <TechMarquee />
       </footer>
     </div>
   );
