@@ -24,6 +24,61 @@ const FEATURES = [
   },
 ];
 
+const TREND_POINTS: [number, number][] = [
+  [0, 330], [80, 310], [150, 322], [230, 280], [300, 292], [380, 250],
+  [450, 262], [530, 215], [600, 230], [680, 180], [750, 195], [830, 150],
+  [900, 162], [980, 115], [1050, 125], [1130, 80], [1200, 60],
+];
+
+const TREND_LINE = TREND_POINTS.map(([x, y], i) => `${i === 0 ? "M" : "L"}${x} ${y}`).join(" ");
+const TREND_AREA = `${TREND_LINE} L1200 400 L0 400 Z`;
+
+function HeroChart() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 h-full w-full"
+      viewBox="0 0 1200 400"
+      preserveAspectRatio="none"
+    >
+      <defs>
+        <linearGradient id="hero-line" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#3763f4" />
+          <stop offset="100%" stopColor="#9c3fb5" />
+        </linearGradient>
+        <linearGradient id="hero-area" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#9c3fb5" stopOpacity="0.18" />
+          <stop offset="100%" stopColor="#3763f4" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+
+      {[80, 160, 240, 320].map((y) => (
+        <line
+          key={y}
+          x1="0"
+          y1={y}
+          x2="1200"
+          y2={y}
+          stroke="#e2e8f0"
+          strokeDasharray="4 6"
+          vectorEffect="non-scaling-stroke"
+        />
+      ))}
+
+      <path d={TREND_AREA} fill="url(#hero-area)" />
+      <path
+        d={TREND_LINE}
+        fill="none"
+        stroke="url(#hero-line)"
+        strokeWidth="3"
+        strokeLinejoin="round"
+        strokeOpacity="0.45"
+        vectorEffect="non-scaling-stroke"
+      />
+    </svg>
+  );
+}
+
 export function LandingPage() {
   return (
     <div className="min-h-screen bg-white">
@@ -47,30 +102,33 @@ export function LandingPage() {
         </nav>
       </header>
 
-      <section className="mx-auto max-w-4xl px-6 pb-20 pt-16 text-center">
-        <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
-          Take control of your money
-        </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-600">
-          Track spending, manage budgets, and work toward your financial goals all in one
-          place. Built for individuals who want a clear picture of where their
-          money goes.
-        </p>
-        <div className="mt-8 flex items-center justify-center gap-4">
-          <Link
-            to="/register"
-            className="rounded-lg bg-brand-500 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-brand-600"
-          >
-            Get started free
-          </Link>
-          <Link
-            to="/login"
-            className="rounded-lg border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-          >
-            I already have an account
-          </Link>
-        </div>
-      </section>
+      <div className="relative overflow-hidden">
+        <HeroChart />
+        <section className="relative mx-auto max-w-4xl px-6 pb-20 pt-16 text-center">
+          <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
+            Take control of your money
+          </h1>
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-600">
+            Track spending, manage budgets, and work toward your financial goals all in one
+            place. Built for individuals who want a clear picture of where their
+            money goes.
+          </p>
+          <div className="mt-8 flex items-center justify-center gap-4">
+            <Link
+              to="/register"
+              className="rounded-lg bg-brand-500 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-brand-600"
+            >
+              Get started free
+            </Link>
+            <Link
+              to="/login"
+              className="rounded-lg border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+            >
+              I already have an account
+            </Link>
+          </div>
+        </section>
+      </div>
 
       <section className="border-t border-slate-100 bg-slate-50 py-16">
         <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 px-6 sm:grid-cols-2 lg:grid-cols-4">
