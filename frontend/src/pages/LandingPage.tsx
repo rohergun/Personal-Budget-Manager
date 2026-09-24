@@ -1,4 +1,5 @@
 import { ArrowLeftRight, LineChart, Target, Wallet } from "lucide-react";
+import { FaGithub } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 const FEATURES = [
@@ -23,6 +24,8 @@ const FEATURES = [
     description: "A clear breakdown of income, expenses, and net for the month, at a glance.",
   },
 ];
+
+const REPO_URL = "https://github.com/rohergun/Personal-Budget-Manager";
 
 const TREND_POINTS: [number, number][] = [
   [0, 330], [80, 310], [150, 322], [230, 280], [300, 292], [380, 250],
@@ -147,6 +150,18 @@ export function LandingPage() {
         </div>
       </section>
 
+      <footer className="flex justify-center py-10">
+        <a
+          href={REPO_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="View source on GitHub"
+          className="group flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-slate-900 hover:bg-slate-900 hover:text-white hover:shadow-md"
+        >
+          <FaGithub className="h-5 w-5" aria-hidden="true" />
+          View on GitHub
+        </a>
+      </footer>
     </div>
   );
 }
