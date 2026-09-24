@@ -108,7 +108,7 @@ export function LandingPage() {
           <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
             Take control of your money
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-600">
+          <p className="mx-auto mt-4 max-w-2xl text-lg">
             Track spending, manage budgets, and work toward your financial goals all in one
             place. Built for individuals who want a clear picture of where their
             money goes.
@@ -133,7 +133,10 @@ export function LandingPage() {
       <section className="border-t border-slate-100 bg-slate-50 py-16">
         <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 px-6 sm:grid-cols-2 lg:grid-cols-4">
           {FEATURES.map(({ icon: Icon, title, description }) => (
-            <div key={title} className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
+            <div
+              key={title}
+              className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-100 transition duration-200 ease-out hover:-translate-y-1 hover:scale-105 hover:shadow-lg motion-reduce:transition-none"
+            >
               <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
                 <Icon size={20} />
               </div>
