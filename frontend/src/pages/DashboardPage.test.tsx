@@ -1,5 +1,6 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { act, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getMonthlySummary } from "../api/summary";
 import type { MonthlySummaryResponse } from "../types/api";
 import { DashboardPage } from "./DashboardPage";
@@ -22,7 +23,25 @@ const summary: MonthlySummaryResponse = {
   ],
 };
 
+const monthLabel = (year: number, monthIndex: number) =>
+  new Date(year, monthIndex, 1).toLocaleDateString(undefined, { month: "long", year: "numeric" });
+
+async function pickMonth(year: number, monthIndex: number) {
+  await userEvent.click(screen.getByRole("button", { expanded: false }));
+  await userEvent.click(screen.getByRole("button", { name: monthLabel(year, monthIndex) }));
+}
+
 describe("DashboardPage", () => {
+  // Only fake Date so the default month is stable; promises and timers stay real.
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date(2026, 8, 15));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it("shows a loading state first", () => {
     vi.mocked(getMonthlySummary).mockReturnValue(new Promise(() => {}));
 
@@ -36,7 +55,9 @@ describe("DashboardPage", () => {
 
     render(<DashboardPage />);
 
-    expect(await screen.findByRole("heading", { name: "Dashboard" })).toBeInTheDocument();
+    expect(await screen.findByText(format(3000))).toBeInTheDocument();
+    expect(getMonthlySummary).toHaveBeenCalledWith("2026-09");
+    expect(screen.getByRole("button", { name: monthLabel(2026, 8) })).toBeInTheDocument();
     expect(screen.getByText(format(3000))).toHaveClass("text-emerald-600");
     expect(screen.getByText(format(3500))).toHaveClass("text-red-600");
     expect(screen.getByText(format(-500))).toHaveClass("text-red-600");
@@ -56,7 +77,7 @@ describe("DashboardPage", () => {
 
     render(<DashboardPage />);
 
-    expect(await screen.findByText(/No transactions yet this month/)).toBeInTheDocument();
+    expect(await screen.findByText(/No transactions this month/)).toBeInTheDocument();
   });
 
   it("shows an error when the summary fails to load", async () => {
@@ -65,5 +86,43 @@ describe("DashboardPage", () => {
     render(<DashboardPage />);
 
     expect(await screen.findByText("Something went wrong. Please try again.")).toBeInTheDocument();
+  });
+
+  it("reloads the whole dashboard for a picked month", async () => {
+    vi.mocked(getMonthlySummary)
+      .mockResolvedValueOnce(summary)
+      .mockResolvedValueOnce({
+        month: "2026-07",
+        totalIncome: 1200,
+        totalExpenses: 400,
+        net: 800,
+        byCategory: [{ categoryId: "c3", categoryName: "Travel", spent: 400, budgetLimit: null }],
+      });
+
+    render(<DashboardPage />);
+    await screen.findByText(format(3000));
+
+    await pickMonth(2026, 6);
+
+    expect(getMonthlySummary).toHaveBeenLastCalledWith("2026-07");
+    expect(await screen.findByText(format(1200))).toBeInTheDocument();
+    expect(screen.getByText("Travel")).toBeInTheDocument();
+    expect(screen.queryByText("Groceries")).not.toBeInTheDocument();
+  });
+
+  it("ignores a slower response for a previously picked month", async () => {
+    let resolveCurrent!: (value: MonthlySummaryResponse) => void;
+    vi.mocked(getMonthlySummary)
+      .mockReturnValueOnce(new Promise((resolve) => (resolveCurrent = resolve)))
+      .mockResolvedValueOnce({ ...summary, month: "2026-07", totalIncome: 1200 });
+
+    render(<DashboardPage />);
+    await pickMonth(2026, 6);
+    expect(await screen.findByText(format(1200))).toBeInTheDocument();
+
+    await act(async () => resolveCurrent(summary));
+
+    expect(screen.getByText(format(1200))).toBeInTheDocument();
+    expect(screen.queryByText(format(3000))).not.toBeInTheDocument();
   });
 });
