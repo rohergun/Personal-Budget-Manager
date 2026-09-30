@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getMonthlySummary } from "../api/summary";
 import { extractErrorMessage } from "../api/errors";
+import { MonthlySummary } from "../components/MonthlySummary";
 import type { MonthlySummaryResponse } from "../types/api";
 
 const numberFormat = new Intl.NumberFormat(undefined, {
@@ -56,6 +57,8 @@ export function DashboardPage() {
         <StatCard label="Expenses" value={summary.totalExpenses} tone="negative" />
         <StatCard label="Net" value={summary.net} tone={summary.net >= 0 ? "positive" : "negative"} />
       </div>
+
+      <MonthlySummary />
 
       <div className="mt-8">
         <h2 className="text-base font-semibold text-slate-900">Spending by category</h2>
