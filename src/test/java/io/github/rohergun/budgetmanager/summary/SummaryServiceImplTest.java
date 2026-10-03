@@ -221,6 +221,50 @@ class SummaryServiceImplTest {
     }
 
     @Test
+    void getMonthlyTransactionsSummary_countsUncategorizedTransactionInTotalsButNotBreakdown() {
+        LocalDateTime withinMonth = month.atDay(10).atTime(12, 0);
+
+        List<Transaction> transactions = List.of(
+                transaction(new BigDecimal("180.00"), TransactionType.EXPENSE, foodCategory, withinMonth),
+                transaction(new BigDecimal("40.00"), TransactionType.EXPENSE, null, withinMonth) // category deleted
+        );
+
+        when(transactionRepository.findAllByUserIdAndTransactionDateBetween(any(), any(), any()))
+                .thenReturn(transactions);
+        when(budgetRepository.findAllByUserId(userId)).thenReturn(List.of());
+
+        MonthlySummaryResponse result = summaryService.getMonthlyTransactionsSummary(userId, month);
+
+        assertThat(result.totalExpenses()).isEqualByComparingTo("220.00");
+        assertThat(result.byCategory())
+                .extracting(CategorySpendingResponse::categoryName)
+                .containsExactly("Food");
+    }
+
+    @Test
+    void getMonthlyTransactionsSummary_ignoresBudgetWhoseCategoryWasDeleted() {
+        LocalDateTime withinMonth = month.atDay(10).atTime(12, 0);
+
+        List<Transaction> transactions = List.of(
+                transaction(new BigDecimal("180.00"), TransactionType.EXPENSE, foodCategory, withinMonth)
+        );
+        List<Budget> budgets = List.of(
+                budget(new BigDecimal("200.00"), foodCategory),
+                budget(new BigDecimal("100.00"), null) // category deleted
+        );
+
+        when(transactionRepository.findAllByUserIdAndTransactionDateBetween(any(), any(), any()))
+                .thenReturn(transactions);
+        when(budgetRepository.findAllByUserId(userId)).thenReturn(budgets);
+
+        MonthlySummaryResponse result = summaryService.getMonthlyTransactionsSummary(userId, month);
+
+        assertThat(result.byCategory())
+                .extracting(CategorySpendingResponse::categoryName, CategorySpendingResponse::budgetLimit)
+                .containsExactly(tuple("Food", new BigDecimal("200.00")));
+    }
+
+    @Test
     void getMonthlyTransactionsSummary_returnsZeroTotalsAndEmptyBreakdown_whenNoActivity() {
         when(transactionRepository.findAllByUserIdAndTransactionDateBetween(any(), any(), any()))
                 .thenReturn(List.of());
