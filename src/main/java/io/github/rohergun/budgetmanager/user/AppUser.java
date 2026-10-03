@@ -1,6 +1,7 @@
 package io.github.rohergun.budgetmanager.user;
 
 import io.github.rohergun.budgetmanager.budget.Budget;
+import io.github.rohergun.budgetmanager.category.Category;
 import io.github.rohergun.budgetmanager.model.BaseEntity;
 import io.github.rohergun.budgetmanager.transaction.Transaction;
 import io.github.rohergun.budgetmanager.financialgoal.FinancialGoal;
@@ -47,4 +48,8 @@ public class AppUser extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<FinancialGoal> financialGoals = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Category> categories = new ArrayList<>();
 }
