@@ -13,7 +13,8 @@ import java.util.UUID;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
-    @Query("select t from Transaction t where t.id = :id and t.user.id = :userId and t.deletedAt is null")
+    @Query("select t from Transaction t left join fetch t.category " +
+            "where t.id = :id and t.user.id = :userId and t.deletedAt is null")
     Optional<Transaction> findByIdAndUserId(UUID id, UUID userId);
 
     @Query(
