@@ -17,13 +17,13 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
     Optional<Transaction> findByIdAndUserId(UUID id, UUID userId);
 
     @Query(
-            value = "select t from Transaction t join fetch t.category where t.user.id = :userId and t.deletedAt is null",
+            value = "select t from Transaction t left join fetch t.category where t.user.id = :userId and t.deletedAt is null",
             countQuery = "select count(t) from Transaction t where t.user.id = :userId and t.deletedAt is null"
     )
     Page<Transaction> findAllByUserId(UUID userId, Pageable pageable);
 
 
-    @Query("select t from Transaction t join fetch t.category " +
+    @Query("select t from Transaction t left join fetch t.category " +
             "where t.user.id = :userId and t.transactionDate between :start and :end and t.deletedAt is null")
     List<Transaction> findAllByUserIdAndTransactionDateBetween(
             UUID userId, LocalDateTime start, LocalDateTime end);

@@ -24,7 +24,16 @@ public class SummaryAggregator {
         return new Totals(totalIncome, totalExpenses, net);
     }
 
-    public List<CategorySpendingResponse> buildCategoryBreakdown(List<Transaction> transactions, List<Budget> budgets){
+    public List<CategorySpendingResponse> buildCategoryBreakdown(
+            List<Transaction> allTransactions,
+            List<Budget> allBudgets){
+
+        List<Transaction> transactions = allTransactions.stream()
+                .filter(t -> t.getCategory() != null)
+                .toList();
+        List<Budget> budgets = allBudgets.stream()
+                .filter(budget -> budget.getCategory() != null)
+                .toList();
 
         Map<UUID, BigDecimal> spentByCategory = extractMonthlyExpensePerCategory(transactions);
         Map<UUID, String> categoryNames = extractCategoryNamesFromTransactions(transactions);
