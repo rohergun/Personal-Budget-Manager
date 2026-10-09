@@ -4,6 +4,8 @@ import io.github.rohergun.budgetmanager.model.BaseEntity;
 import io.github.rohergun.budgetmanager.user.AppUser;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -30,6 +32,7 @@ public class FinancialGoal extends BaseEntity {
     private LocalDateTime deadline;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_financial_goals_user"))
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private AppUser user;
 }
