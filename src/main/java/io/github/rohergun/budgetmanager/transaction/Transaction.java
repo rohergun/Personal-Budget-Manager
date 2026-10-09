@@ -26,11 +26,12 @@ public class Transaction extends BaseEntity {
     private TransactionType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_transactions_user"))
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private AppUser user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", nullable = true)
+    @JoinColumn(name = "category_id", nullable = true, foreignKey = @ForeignKey(name = "fk_transactions_category"))
     @OnDelete(action = OnDeleteAction.SET_NULL)
     private Category category;
 
